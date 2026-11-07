@@ -376,4 +376,121 @@ const matches=group.items.filter(item=>item.join(" ").toLowerCase().includes(que
 if(!matches.length)return;
 const heading=document.createElement("div");
 heading.style.gridColumn="1/-1";
-heading.innerHTML=`<h3 style="color:var(--accent);margin:10px 0 0">${group.
+heading.innerHTML=`<h3 style="color:var(--accent);margin:10px 0 0">${group.icon} ${group.ar} <span class="latin">${group.en}</span></h3>`;
+target.appendChild(heading);
+matches.forEach(item=>{
+const card=document.createElement("div");
+card.className="card";
+card.innerHTML=`<b>${item[0]}</b><div class="latin">${item[1]}</div><div class="muted">${item[3]}</div>`;
+card.onclick=()=>{
+const d=document.getElementById("atlasDetail");
+d.classList.remove("hidden");
+d.innerHTML=`<h2>${item[0]}</h2>
+<div class="detail-row"><div class="detail-label">English</div><div class="latin">${item[1]}</div></div>
+<div class="detail-row"><div class="detail-label">Latin</div><div class="latin">${item[2]}</div></div>
+<div class="detail-row"><div class="detail-label">الموقع التشريحي</div><p>${item[3]}</p></div>
+<div class="detail-row"><div class="detail-label">الوظيفة أو الأهمية</div><p>${item[4]}</p></div>
+<p class="muted">ملاحظة: هذه بطاقة تعريفية تعليمية مختصرة، ويمكن توسيعها لاحقاً بإضافة المنشأ والارتكاز والتعصيب والتروية الدموية والعلاقات التشريحية.</p>`;
+d.scrollIntoView({behavior:"smooth",block:"nearest"});
+};
+target.appendChild(card);
+});
+});
+}
+renderAtlas();
+document.getElementById("atlasSearch").addEventListener("input",e=>{
+document.getElementById("atlasDetail").classList.add("hidden");
+renderAtlas(e.target.value);
+});
+
+function renderTerms(query=""){
+const target=document.getElementById("termsList");
+const found=terms.filter(t=>t.join(" ").toLowerCase().includes(query.toLowerCase()));
+target.innerHTML=found.map(t=>`
+<div class="detail-row">
+<b>${t[0]}</b>
+<div class="latin">English: ${t[1]}</div>
+<div class="latin">Latin: ${t[2]}</div>
+</div>`).join("")||'<p class="muted">لا توجد نتائج مطابقة.</p>';
+}
+renderTerms();
+document.getElementById("termSearch").addEventListener("input",e=>renderTerms(e.target.value));
+
+const questions=[
+["ما الوحدة الأساسية للجهاز الهيكلي؟",["العظم","العصب","العضلة"],0],
+["ما العضو الذي يضخ الدم؟",["الرئة","القلب","الكبد"],1],
+["ما البنية التي تصل العضلة بالعظم؟",["الرباط","الوتر","الغضروف"],1],
+["ما الجزء المركزي من الجهاز العصبي؟",["الدماغ والنخاع الشوكي","القلب","الكليتان"],0],
+["ما الأوعية التي تعيد الدم نحو القلب غالباً؟",["الشرايين","الأوردة","الشعيرات"],1],
+["كم عدد الفقرات العنقية عادة؟",["5","7","12"],1],
+["ما أطول عظم في جسم الإنسان؟",["عظم الفخذ","عظم العضد","الظنبوب"],0],
+["أين توجد العضلة الدالية؟",["الكتف","الساق","البطن"],0],
+["ما وظيفة الحجاب الحاجز الأساسية؟",["المساعدة في التنفس","ضخ الدم","هضم الطعام"],0],
+["أي عضو يساهم في ترشيح الدم وتكوين البول؟",["الكبد","الكلية","الطحال"],1]
+];
+let qi=0,points=0,answered=false;
+function showQuestion(){
+answered=false;
+const q=questions[qi];
+document.getElementById("question").innerHTML=`<b>السؤال ${qi+1} من ${questions.length}: ${q[0]}</b>`;
+document.getElementById("answers").innerHTML="";
+q[1].forEach((answer,index)=>{
+const b=document.createElement("button");
+b.className="answer";
+b.textContent=answer;
+b.onclick=()=>{
+if(answered)return;
+answered=true;
+if(index===q[2]){
+points++;
+document.getElementById("feedback").innerHTML='<span class="correct">إجابة صحيحة!</span>';
+}else{
+document.getElementById("feedback").innerHTML=`<span class="wrong">الإجابة الصحيحة: ${q[1][q[2]]}</span>`;
+}
+document.getElementById("score").textContent=`النتيجة: ${points} من ${qi+1}`;
+};
+document.getElementById("answers").appendChild(b);
+});
+document.getElementById("feedback").textContent="";
+document.getElementById("score").textContent=`النتيجة الحالية: ${points}`;
+document.getElementById("next").textContent=qi===questions.length-1?"عرض النتيجة":"السؤال التالي";
+}
+showQuestion();
+document.getElementById("next").onclick=()=>{
+if(!answered){
+document.getElementById("feedback").textContent="اختر إجابة أولاً.";
+return;
+}
+if(qi<questions.length-1){
+qi++;
+showQuestion();
+}else{
+document.getElementById("question").innerHTML=`<h2>انتهى الاختبار!</h2><p>نتيجتك النهائية: ${points} من ${questions.length}</p>`;
+document.getElementById("answers").innerHTML="";
+document.getElementById("feedback").textContent="يمكنك إعادة الاختبار للمراجعة.";
+document.getElementById("next").classList.add("hidden");
+}
+};
+document.getElementById("restart").onclick=()=>{
+qi=0;points=0;
+document.getElementById("next").classList.remove("hidden");
+showQuestion();
+};
+
+const themeColors={gold:"#080f19",blue:"#071525",purple:"#130c20",white:"#f3f5f8"};
+const themeButtons=document.querySelectorAll("[data-theme-choice]");
+function setTheme(theme){
+if(!Object.keys(themeColors).includes(theme))theme="gold";
+document.body.dataset.theme=theme;
+document.querySelector('meta[name="theme-color"]').content=themeColors[theme];
+themeButtons.forEach(b=>b.classList.toggle("selected",b.dataset.themeChoice===theme));
+try{localStorage.setItem("makdad-anatomy-theme",theme)}catch(e){}
+}
+let savedTheme="gold";
+try{savedTheme=localStorage.getItem("makdad-anatomy-theme")||"gold"}catch(e){}
+setTheme(savedTheme);
+themeButtons.forEach(b=>b.addEventListener("click",()=>setTheme(b.dataset.themeChoice)));
+</script>
+</body>
+</html>
+
