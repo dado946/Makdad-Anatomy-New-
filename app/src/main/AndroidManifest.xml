@@ -5,8 +5,6 @@
     <application
         android:allowBackup="true"
         android:label="مقداد أناتومي"
-        android:icon="@drawable/file_00000000dfe0820aa18d778ba1d4be17"
-        android:roundIcon="@drawable/file_00000000dfe0820aa18d778ba1d4be17"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
 
