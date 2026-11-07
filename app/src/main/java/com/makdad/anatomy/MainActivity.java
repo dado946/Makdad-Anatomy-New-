@@ -4,17 +4,19 @@ package com.makdad.anatomy;
 import android.app.Activity;
 import android.os.Bundle;
 import android.graphics.Color;
-import android.view.Gravity;
+import android.graphics.drawable.Drawable;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.ImageView;
 import android.webkit.WebView;
 import android.webkit.WebSettings;
+import android.os.Handler;
+import android.os.Looper;
+
+import java.io.InputStream;
 
 public class MainActivity extends Activity {
 
     private WebView webView;
-    private LinearLayout splash;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,51 +30,28 @@ public class MainActivity extends Activity {
 
     private void showSplash() {
 
-        splash = new LinearLayout(this);
-        splash.setOrientation(LinearLayout.VERTICAL);
-        splash.setGravity(Gravity.CENTER);
-        splash.setBackgroundColor(Color.rgb(9, 11, 14));
+        ImageView image = new ImageView(this);
+        image.setBackgroundColor(Color.rgb(9, 11, 14));
+        image.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
-        TextView symbol = new TextView(this);
-        symbol.setText("⚕");
-        symbol.setTextSize(76);
-        symbol.setTextColor(Color.rgb(212, 175, 55));
-        symbol.setGravity(Gravity.CENTER);
+        try {
+            InputStream stream = getAssets().open(
+                "file_00000000e378820aaf66eca8b0dc691e.png"
+            );
 
-        TextView title = new TextView(this);
-        title.setText("مقداد أناتومي");
-        title.setTextSize(32);
-        title.setTextColor(Color.rgb(212, 175, 55));
-        title.setGravity(Gravity.CENTER);
-        title.setTypeface(null, 1);
+            Drawable picture = Drawable.createFromStream(stream, null);
+            image.setImageDrawable(picture);
+            stream.close();
 
-        TextView subtitle = new TextView(this);
-        subtitle.setText("MAKDAD ANATOMY");
-        subtitle.setTextSize(16);
-        subtitle.setTextColor(Color.WHITE);
-        subtitle.setGravity(Gravity.CENTER);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        TextView description = new TextView(this);
-        description.setText("رحلتك إلى فهم جسم الإنسان");
-        description.setTextSize(15);
-        description.setTextColor(Color.LTGRAY);
-        description.setGravity(Gravity.CENTER);
+        setContentView(image);
 
-        splash.addView(symbol);
-        splash.addView(title);
-        splash.addView(subtitle);
-
-        LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-        params.topMargin = 24;
-        splash.addView(description, params);
-
-        setContentView(splash);
-
-        splash.postDelayed(() -> openMainPage(), 2500);
+        new Handler(Looper.getMainLooper()).postDelayed(
+            () -> openMainPage(), 3000
+        );
     }
 
     private void openMainPage() {
