@@ -4,13 +4,20 @@ package com.makdad.anatomy;
 import android.app.Activity;
 import android.os.Bundle;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
+import android.graphics.Typeface;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.ProgressBar;
 import android.webkit.WebView;
 import android.webkit.WebSettings;
 import android.os.Handler;
 import android.os.Looper;
+import android.graphics.drawable.GradientDrawable;
 
 import java.io.InputStream;
 
@@ -22,47 +29,91 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getWindow().setStatusBarColor(Color.rgb(9, 11, 14));
-        getWindow().setNavigationBarColor(Color.rgb(9, 11, 14));
+        getWindow().setStatusBarColor(Color.BLACK);
+        getWindow().setNavigationBarColor(Color.BLACK);
+        getWindow().setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        );
 
         showSplash();
     }
 
     private void showSplash() {
+        FrameLayout root = new FrameLayout(this);
+        root.setBackgroundColor(Color.rgb(5, 10, 20));
 
-        ImageView image = new ImageView(this);
-        image.setBackgroundColor(Color.rgb(9, 11, 14));
-        image.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        ImageView background = new ImageView(this);
+        background.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
         try {
             InputStream stream = getAssets().open(
                 "file_00000000e378820aaf66eca8b0dc691e.png"
             );
-
-            Drawable picture = Drawable.createFromStream(stream, null);
-            image.setImageDrawable(picture);
+            background.setImageDrawable(
+                android.graphics.drawable.Drawable.createFromStream(stream, null)
+            );
             stream.close();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        setContentView(image);
+        root.addView(background, new FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        ));
+
+        View shade = new View(this);
+        shade.setBackgroundColor(Color.argb(95, 0, 0, 0));
+        root.addView(shade, new FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        ));
+
+        LinearLayoutHolder content = new LinearLayoutHolder(this);
+
+        TextView title = new TextView(this);
+        title.setText("MAKDAD ANATOMY");
+        title.setTextColor(Color.rgb(232, 195, 85));
+        title.setTextSize(27);
+        title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        title.setGravity(Gravity.CENTER);
+
+        TextView subtitle = new TextView(this);
+        subtitle.setText("YOUR JOURNEY INTO HUMAN ANATOMY");
+        subtitle.setTextColor(Color.WHITE);
+        subtitle.setTextSize(11);
+        subtitle.setGravity(Gravity.CENTER);
+
+        ProgressBar loader = new ProgressBar(this);
+        loader.setIndeterminate(true);
+
+        content.addView(title);
+        content.addView(subtitle);
+        content.addView(loader);
+
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            Gravity.CENTER
+        );
+        params.leftMargin = 20;
+        params.rightMargin = 20;
+        root.addView(content, params);
+
+        setContentView(root);
 
         new Handler(Looper.getMainLooper()).postDelayed(
-            () -> openMainPage(), 3000
+            this::openMainPage, 3000
         );
     }
 
     private void openMainPage() {
-
         webView = new WebView(this);
-
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setAllowFileAccess(true);
-
         setContentView(webView);
         webView.loadUrl("file:///android_asset/index.html");
     }
@@ -73,6 +124,17 @@ public class MainActivity extends Activity {
             webView.goBack();
         } else {
             super.onBackPressed();
+        }
+    }
+
+    private static class LinearLayoutHolder
+            extends android.widget.LinearLayout {
+
+        public LinearLayoutHolder(Activity activity) {
+            super(activity);
+            setOrientation(VERTICAL);
+            setGravity(Gravity.CENTER);
+            setPadding(20, 20, 20, 20);
         }
     }
 }
