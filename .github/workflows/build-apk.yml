@@ -1,3 +1,4 @@
+
 name: Build APK
 
 on:
@@ -25,11 +26,27 @@ jobs:
         with:
           gradle-version: '8.7'
 
+      - name: Check Android Manifest
+        run: |
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          path = "app/src/main/AndroidManifest.xml"
+          try:
+              ET.parse(path)
+              print("Manifest XML is valid")
+          except Exception as e:
+              print("MANIFEST ERROR:")
+              print(e)
+              raise
+          PY
+
       - name: Build APK
-        run: gradle assembleDebug
+        run: gradle assembleDebug --stacktrace --info
 
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: Makdad-Anatomy-APK
           path: app/build/outputs/apk/debug/app-debug.apk
+          
