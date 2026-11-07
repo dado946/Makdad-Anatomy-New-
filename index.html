@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>مقداد أناتومي | Makdad Anatomy</title>
+<style>
+:root{--bg:#0c1421;--panel:#152235;--panel2:#1c2d43;--gold:#e5bd70;--text:#f5f1e8;--muted:#b7c2d0;--line:#31445c}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#1a2c43,#0c1421 55%);color:var(--text);font-family:Arial,Tahoma,sans-serif;line-height:1.65}
+header{padding:24px 18px 16px;text-align:center;border-bottom:1px solid var(--line)}.brand{color:var(--gold);font-size:13px;letter-spacing:2px}.logo{font-size:34px;margin:6px}.sub{color:var(--muted);font-size:14px}
+main{max-width:900px;margin:auto;padding:18px}.tabs{display:flex;gap:8px;overflow:auto;margin:12px 0 18px}.tab,button{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:10px 15px;border-radius:12px;cursor:pointer;white-space:nowrap}.tab.active,button.primary{background:var(--gold);color:#17202b;border-color:var(--gold);font-weight:bold}
+h2{font-size:21px;color:var(--gold)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}.card{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:15px;min-height:118px;cursor:pointer}.card:active{transform:scale(.98)}.emoji{font-size:27px}.card b{display:block;margin:5px 0}.latin,.muted{color:var(--muted);font-size:13px}.box{background:var(--panel);border:1px solid var(--line);padding:17px;border-radius:16px;margin:12px 0}.search{width:100%;padding:13px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:white;font-size:16px;margin:8px 0 16px}
+.hidden{display:none}.term{padding:10px 0;border-bottom:1px solid var(--line)}.term:last-child{border:0}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.answer{display:block;width:100%;text-align:right;margin:8px 0}.correct{color:#8fe0ae}.wrong{color:#ffadad}footer{text-align:center;color:var(--muted);font-size:12px;padding:25px}
+</style>
+</head>
+<body>
+<header><div class="brand">MAKDAD MEDICAL LEARNING</div><div class="logo">⚕️ مقداد أناتومي</div><div class="sub">دليلك المنظم لدراسة تشريح جسم الإنسان</div></header>
+<main>
+<div class="tabs"><button class="tab active" data-tab="systems">أجهزة الجسم</button><button class="tab" data-tab="terms">مصطلحات</button><button class="tab" data-tab="quiz">اختبر نفسك</button><button class="tab" data-tab="about">عن التطبيق</button></div>
+<section id="systems"><h2>أجهزة جسم الإنسان</h2><p class="muted">اختر جهازاً لعرض تعريف مختصر وأهم البنى التشريحية.</p><input class="search" id="search" placeholder="ابحث عن جهاز..."><div class="grid" id="cards"></div><div class="box hidden" id="detail"></div></section>
+<section id="terms" class="hidden"><h2>قاموس المصطلحات</h2><input class="search" id="termSearch" placeholder="ابحث بالعربية أو اللاتينية..."><div class="box" id="termsList"></div></section>
+<section id="quiz" class="hidden"><h2>اختبر معلوماتك</h2><div class="box"><div id="question"></div><div id="answers"></div><p id="feedback" aria-live="polite"></p><button class="primary" id="next">السؤال التالي</button><p class="muted" id="score"></p></div></section>
+<section id="about" class="hidden"><h2>عن مقداد أناتومي</h2><div class="box">نسخة تعليمية أولية للمراجعة وتنظيم المصطلحات التشريحية. المعلومات مختصرة وليست بديلاً عن كتاب التشريح أو شرح المدرّس. لا تتضمن هذه النسخة بعدُ أطلساً ثلاثي الأبعاد كاملاً أو نماذج سريرية معتمدة.</div></section>
+</main><footer>Makdad Anatomy · نسخة دراسية تجريبية</footer>
+<script>
+const systems=[
+['🦴','الجهاز الهيكلي','Skeletal System','يدعم الجسم ويحمي الأعضاء ويساعد على الحركة.','الجمجمة • العمود الفقري • القفص الصدري • الأطراف • الحوض'],
+['💪','الجهاز العضلي','Muscular System','يساهم في الحركة والثبات وإنتاج الحرارة.','العضلات الهيكلية • الملساء • القلبية'],
+['🧠','الجهاز العصبي','Nervous System','يستقبل المعلومات ويعالجها وينسق الاستجابات.','الدماغ • النخاع الشوكي • الأعصاب المحيطية'],
+['❤️','الجهاز القلبي الوعائي','Cardiovascular System','ينقل الدم والأكسجين والمواد الغذائية.','القلب • الشرايين • الأوردة • الشعيرات'],
+['🫁','الجهاز التنفسي','Respiratory System','يساهم في تبادل الأكسجين وثاني أكسيد الكربون.','الأنف • البلعوم • الحنجرة • الرغامى • الرئتان'],
+['🍽️','الجهاز الهضمي','Digestive System','يهضم الطعام ويمتص المغذيات ويتخلص من الفضلات.','الفم • المريء • المعدة • الأمعاء • الكبد • البنكرياس'],
+['🫘','الجهاز البولي','Urinary System','ينظم الماء والأملاح ويساعد على طرح الفضلات.','الكليتان • الحالبان • المثانة • الإحليل'],
+['🧬','جهاز الغدد الصماء','Endocrine System','ينظم وظائف الجسم بواسطة الهرمونات.','النخامية • الدرقية • الكظرية • البنكرياس'],
+['🛡️','الجهاز اللمفاوي والمناعي','Lymphatic & Immune','يساهم في المناعة وإعادة السوائل إلى الدم.','العقد اللمفاوية • الطحال • الأوعية اللمفاوية'],
+['🧍','الجهاز التناسلي','Reproductive System','يضم الأعضاء المسؤولة عن التكاثر.','أعضاء تناسلية داخلية وخارجية'],
+['🧴','الجهاز اللحافي','Integumentary System','يشكل حاجزاً واقياً ويساعد في تنظيم الحرارة.','الجلد • الشعر • الأظافر • الغدد الجلدية']
+];
+const terms=[['عظم','Bone'],['مفصل','Joint'],['غضروف','Cartilage'],['عضلة','Muscle'],['وتر','Tendon'],['رباط','Ligament'],['عصب','Nerve'],['شريان','Artery'],['وريد','Vein'],['شعيرة دموية','Capillary'],['جمجمة','Skull'],['لوح الكتف','Scapula'],['عظم الفخذ','Femur'],['القص','Sternum'],['الفقرة','Vertebra']];
+const cards=document.getElementById('cards');
+function renderCards(q=''){cards.innerHTML='';systems.filter(x=>(x[1]+x[2]).toLowerCase().includes(q.toLowerCase())).forEach((s)=>{let d=document.createElement('div');d.className='card';d.innerHTML=`<div class="emoji">${s[0]}</div><b>${s[1]}</b><span class="latin">${s[2]}</span>`;d.onclick=()=>{let el=document.getElementById('detail');el.classList.remove('hidden');el.innerHTML=`<h2>${s[1]}</h2><div class="latin">${s[2]}</div><p>${s[3]}</p><b>أهم البنى:</b><p>${s[4]}</p>`;el.scrollIntoView({behavior:'smooth'});};cards.appendChild(d)})}
+renderCards();document.getElementById('search').oninput=e=>renderCards(e.target.value);
+function renderTerms(q=''){document.getElementById('termsList').innerHTML=terms.filter(t=>t.join(' ').toLowerCase().includes(q.toLowerCase())).map(t=>`<div class="term"><b>${t[0]}</b><div class="latin">${t[1]}</div></div>`).join('')};renderTerms();document.getElementById('termSearch').oninput=e=>renderTerms(e.target.value);
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));['systems','terms','quiz','about'].forEach(id=>document.getElementById(id).classList.toggle('hidden',id!==b.dataset.tab))});
+const qs=[['ما الوحدة الأساسية للجهاز الهيكلي؟',['العظم','العصب','العضلة'],0],['ما العضو الذي يضخ الدم؟',['الرئة','القلب','الكبد'],1],['ما البنية التي تصل العضلة بالعظم؟',['الرباط','الوتر','الغضروف'],1],['ما الجزء المركزي من الجهاز العصبي؟',['الدماغ والنخاع الشوكي','القلب','الكليتان'],0],['ما الأوعية التي تعيد الدم نحو القلب غالباً؟',['الشرايين','الأوردة','الشعيرات'],1]];
+let qi=0,points=0,answered=false;function showQ(){answered=false;let q=qs[qi%qs.length];document.getElementById('question').innerHTML=`<b>السؤال ${qi+1}: ${q[0]}</b>`;document.getElementById('answers').innerHTML='';q[1].forEach((a,i)=>{let b=document.createElement('button');b.className='answer';b.textContent=a;b.onclick=()=>{if(answered)return;answered=true;let ok=i===q[2];if(ok)points++;document.getElementById('feedback').innerHTML=ok?'<span class="correct">إجابة صحيحة!</span>':`<span class="wrong">ليست صحيحة. الإجابة: ${q[1][q[2]]}</span>`;document.getElementById('score').textContent=`نتيجتك: ${points} من ${qi+1}`};document.getElementById('answers').appendChild(b)});document.getElementById('feedback').textContent='';document.getElementById('score').textContent=`النتيجة الحالية: ${points}`};showQ();document.getElementById('next').onclick=()=>{qi++;showQ()};
+</script></body></html>
