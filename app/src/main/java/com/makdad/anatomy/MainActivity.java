@@ -1,3 +1,4 @@
+
 package com.makdad.anatomy;
 
 import android.app.Activity;
@@ -6,15 +7,36 @@ import android.webkit.WebView;
 import android.webkit.WebSettings;
 
 public class MainActivity extends Activity {
+
+    private WebView webView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        WebView webView = new WebView(this);
+        webView = new WebView(this);
+
         WebSettings settings = webView.getSettings();
+
         settings.setJavaScriptEnabled(true);
 
+        // تفعيل التخزين المحلي لحفظ اللون المختار
+        settings.setDomStorageEnabled(true);
+
+        // السماح بملفات التطبيق المحلية
+        settings.setAllowFileAccess(true);
+
         webView.loadUrl("file:///android_asset/index.html");
+
         setContentView(webView);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (webView != null && webView.canGoBack()) {
+            webView.goBack();
+        } else {
+            super.onBackPressed();
+        }
     }
 }
