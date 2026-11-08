@@ -180,7 +180,9 @@ class AtlasRenderer {
       }
 
       this.requestRender();
-    }).observe(canvas);
+    });
+
+this._resizeObserver.observe(canvas);
 
     
 this._raf = 0;
