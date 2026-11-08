@@ -21,7 +21,7 @@
     return n;
   };
   const cssColor = (rgb) => `rgb(${rgb.map(v => Math.round(v * 255)).join(',')})`;
-  const plural = (n, w) => `${n.toLocaleString()} ${w}${n === 1 ? '' : 's'}`;
+  const plural = (n, w) => `${n.toLocaleString()} ${w}`;
 
   // Layers that cover everything else start switched off.
   const HIDDEN_BY_DEFAULT = new Set(['skin', 'fascia']);
