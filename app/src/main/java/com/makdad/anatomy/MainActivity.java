@@ -321,7 +321,7 @@ public class MainActivity extends Activity {
                     return atlasResponse;
                 }
 
-                return assetLoader.shouldInterceptRequest(url);
+                return assetLoader.shouldInterceptRequest(Uri.parse(url));
             }
         });
 
