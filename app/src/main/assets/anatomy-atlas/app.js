@@ -930,6 +930,13 @@ drag = null;
     $('#modeQuiz').addEventListener('click', () => setMode('quiz'));
     $$('[data-view]').forEach(b => b.addEventListener('click', () => renderer.view(b.dataset.view)));
     $('#btnReset').addEventListener('click', resetAll);
+    const sidebarBtn = $('#btnSidebar');
+sidebarBtn.addEventListener('click', () => {
+  const app = $('#app');
+  const collapsed = app.classList.toggle('sidebar-collapsed');
+  sidebarBtn.textContent = collapsed ? 'إظهار القائمة' : 'إخفاء القائمة';
+  sidebarBtn.setAttribute('aria-expanded', String(!collapsed));
+});
     $('#btnXray').addEventListener('click', () => setXray(!renderer.xray));
     $('#btnShot').addEventListener('click', saveImage);
     $('#btnData').addEventListener('click', openDataDialog);
