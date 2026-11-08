@@ -427,10 +427,9 @@ dialog { width: min(640px, 94vw); max-height: 90vh; }
     padding: 5px 2px;
   }
 
-  input[type="radio"],
-  input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
+  input[type="radio"] {
+  width: 18px;
+  height: 18px;
   }
 
   input[type="range"] {
