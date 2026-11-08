@@ -260,8 +260,9 @@ dialog { width: min(640px, 94vw); max-height: 90vh; }
 .loading .bar > div { height: 100%; width: 0; background: var(--film); }/* Mobile layout for Makdad Anatomy */
 @media (max-width: 700px) {
   html, body {
+    width: 100%;
     min-height: 100%;
-    height: auto;
+    height: 100%;
   }
 
   body {
@@ -270,17 +271,16 @@ dialog { width: min(640px, 94vw); max-height: 90vh; }
 
   #app {
     width: 100%;
-    height: auto;
     min-height: 100vh;
+    height: auto;
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto minmax(320px, 48vh) auto auto auto;
+    grid-template-columns: minmax(0, 1fr) minmax(112px, 34vw);
+    grid-template-rows: auto minmax(420px, 65vh) auto auto;
     grid-template-areas:
-      "top"
-      "stage"
-      "side"
-      "insp"
-      "status";
+      "top top"
+      "stage side"
+      "insp insp"
+      "status status";
   }
 
   .topbar {
@@ -303,16 +303,27 @@ dialog { width: min(640px, 94vw); max-height: 90vh; }
     margin-left: 0;
   }
 
-  .sidebar,
+  .sidebar {
+    grid-area: side;
+    min-width: 0;
+    min-height: 420px;
+    max-height: 65vh;
+    overflow: auto;
+    border: 1px solid var(--line);
+  }
+
   .inspector {
+    grid-area: insp;
     min-height: 180px;
-    max-height: 42vh;
+    max-height: 35vh;
     overflow: auto;
     border: 1px solid var(--line);
   }
 
   .stage {
-    min-height: 320px;
+    grid-area: stage;
+    min-width: 0;
+    min-height: 420px;
     position: relative;
   }
 
@@ -321,6 +332,14 @@ dialog { width: min(640px, 94vw); max-height: 90vh; }
     height: 100%;
     display: block;
     touch-action: none;
+  }
+
+  #app.sidebar-collapsed {
+    grid-template-columns: minmax(0, 1fr) 0;
+  }
+
+  #app.sidebar-collapsed .sidebar {
+    display: none;
   }
 
   .statusbar {
