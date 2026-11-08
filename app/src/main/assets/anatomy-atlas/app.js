@@ -785,6 +785,8 @@ let inertiaFrame = null;
       if (!drag.moved && Math.hypot(dx, dy) < 3) return;
 
       drag.moved = true;
+      drag.lastDx = dx;
+drag.lastDy = dy;
       canvas.classList.add('dragging');
       drag.x = e.clientX;
       drag.y = e.clientY;
