@@ -1,4 +1,3 @@
-
 name: Build Offline Anatomy Data
 
 on:
@@ -27,12 +26,19 @@ jobs:
           repository: CognitionLabSNUC/open-anatomy-atlas
           path: open-anatomy-atlas
 
-      - name: Download and build anatomy data
+      - name: Download anatomy data
         working-directory: open-anatomy-atlas
         run: |
           node tools/fetch-data.js \
             --source bp3d43 \
             --dir "$RUNNER_TEMP/atlas-data"
+
+      - name: Build bones-only atlas
+        working-directory: open-anatomy-atlas
+        run: |
+          node ../tools/build-bones.js \
+            "$RUNNER_TEMP/atlas-data/atlases/bp3d43/raw" \
+            "$RUNNER_TEMP/atlas-data/atlases/bp3d43/build"
 
       - name: Prepare offline data
         working-directory: open-anatomy-atlas
@@ -54,9 +60,8 @@ jobs:
           tag_name: atlas-data-bp3d43-v1
           name: Offline Anatomy Data
           body: |
-            BodyParts3D 4.3 anatomical data.
+            BodyParts3D 4.3 bone-only anatomical data.
             Licensed under CC BY 4.0.
           files: ${{ runner.temp }}/atlas-bp3d43.zip
           overwrite_files: true
           make_latest: false
-          
