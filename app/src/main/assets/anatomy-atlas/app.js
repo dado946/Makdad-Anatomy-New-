@@ -915,16 +915,35 @@
   async function boot() {
     try {
       renderer = new AtlasRenderer($('#viewport'));
+      renderer.onFrame = positionPin;
+
+      bindStage();
+      bindUI();
+
+      showLoading('جارٍ تجهيز الأطلس...', 0);
+
+      const data = await loadBest();
+
+      if (!data) {
+        throw new Error('لم يتم العثور على بيانات الأطلس');
+      }
+
+      useAtlas(data);
+
+      if (host && atlas.isDemo) {
+        openDataDialog();
+      }
+
+      window.__atlasDebug = {
+        get atlas() { return atlas; },
+        get renderer() { return renderer; },
+        select
+      };
+
     } catch (e) {
-      $('#loading').textContent = e.message;
-      return;
+      console.error('Atlas boot error:', e);
+      showLoading('تعذر تشغيل الأطلس: ' + (e.message || e), 0);
     }
-    renderer.onFrame = positionPin;
-    bindStage();
-    bindUI();
-    useAtlas(await loadBest());
-    if (host && atlas.isDemo) openDataDialog();
-    window.__atlasDebug = { get atlas() { return atlas; }, get renderer() { return renderer; }, select };
   }
 
   boot();
