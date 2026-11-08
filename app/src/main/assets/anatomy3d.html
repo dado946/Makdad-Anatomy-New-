@@ -1,0 +1,347 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>مقداد أناتومي - المختبر ثلاثي الأبعاد</title>
+
+<style>
+*{box-sizing:border-box}
+html,body{
+ margin:0;width:100%;height:100%;overflow:hidden;
+ background:#080d14;color:#f5f5f5;
+ font-family:Arial,sans-serif
+}
+#viewer{position:absolute;inset:0}
+canvas{display:block}
+.top{
+ position:absolute;top:0;right:0;left:0;
+ padding:14px;background:#101a27eF;
+ display:flex;justify-content:space-between;
+ align-items:center;z-index:5
+}
+h2{font-size:17px;margin:0;color:#e6c477}
+#status{font-size:11px;color:#b8c5d5;margin-top:5px}
+.panel{
+ position:absolute;bottom:12px;right:10px;left:10px;
+ z-index:5;background:#111c2bed;
+ border:1px solid #34445a;border-radius:16px;
+ padding:12px
+}
+.buttons{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+button{
+ border:1px solid #53647a;border-radius:10px;
+ background:#1d2b3c;color:white;
+ padding:12px 5px;font-size:13px
+}
+button.active{background:#a77d32;border-color:#e9c36c}
+button:active{opacity:.7}
+.info{
+ margin-top:10px;padding:10px;
+ background:#0a111b;border-radius:10px;
+ font-size:13px;line-height:1.8
+}
+#name{color:#e9c36c;font-weight:bold}
+.small{font-size:11px;color:#aebdce}
+#zoom{
+ position:absolute;left:12px;top:85px;
+ z-index:5;display:flex;flex-direction:column;gap:7px
+}
+#zoom button{width:45px;height:45px;font-size:19px;padding:0}
+</style>
+</head>
+
+<body>
+<div id="viewer"></div>
+
+<div class="top">
+ <div>
+  <h2>مقداد أناتومي</h2>
+  <div id="status">جاري تجهيز المختبر...</div>
+ </div>
+ <div style="color:#e9c36c;font-size:12px">3D Anatomy</div>
+</div>
+
+<div id="zoom">
+ <button onclick="zoomCamera(1)">+</button>
+ <button onclick="zoomCamera(-1)">−</button>
+ <button onclick="resetCamera()">⟳</button>
+</div>
+
+<div class="panel">
+ <div class="buttons">
+  <button id="showAll" class="active" onclick="showAll()">إظهار الكل</button>
+  <button id="isolate" onclick="isolateSelected()">عزل الجزء المحدد</button>
+  <button id="showMuscles" onclick="toggleMuscles()">إظهار العضلات</button>
+  <button id="showSkeleton" onclick="toggleSkeleton()">إظهار الهيكل العظمي</button>
+  <button onclick="playAnimations()">تشغيل الحركات</button>
+  <button onclick="stopAnimations()">إيقاف الحركات</button>
+ </div>
+
+ <div class="info">
+  <div id="name">لم يتم اختيار أي جزء</div>
+  <div id="details">المس أي عظمة أو عضلة في المجسم لاختيارها.</div>
+  <div class="small">يمكنك تدوير المجسم بإصبعك والتكبير بإصبعين.</div>
+ </div>
+</div>
+
+<script type="importmap">
+{
+ "imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+ }
+}
+</script>
+
+<script type="module">
+import * as THREE from "three";
+import {OrbitControls} from
+ "three/addons/controls/OrbitControls.js";
+import {GLTFLoader} from
+ "three/addons/loaders/GLTFLoader.js";
+
+const viewer=document.getElementById("viewer");
+const status=document.getElementById("status");
+
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x080d14);
+
+const camera=new THREE.PerspectiveCamera(
+ 40,innerWidth/innerHeight,0.01,10000
+);
+camera.position.set(0,1.5,4);
+
+const renderer=new THREE.WebGLRenderer({
+ antialias:true,alpha:false
+});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.25;
+viewer.appendChild(renderer.domElement);
+
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true;
+controls.dampingFactor=.07;
+controls.minDistance=.15;
+controls.maxDistance=30;
+controls.target.set(0,1,0);
+
+scene.add(new THREE.HemisphereLight(0xffffff,0x30394b,2));
+
+const light1=new THREE.DirectionalLight(0xffffff,3);
+light1.position.set(4,7,5);
+scene.add(light1);
+
+const light2=new THREE.DirectionalLight(0x8caeff,1.5);
+light2.position.set(-5,2,-4);
+scene.add(light2);
+
+const loader=new GLTFLoader();
+
+let skeleton=null;
+let muscles=null;
+let selected=null;
+let mixer=null;
+let animationActions=[];
+let originalCameraPosition=new THREE.Vector3(0,1.5,4);
+let originalTarget=new THREE.Vector3(0,1,0);
+
+const raycaster=new THREE.Raycaster();
+const pointer=new THREE.Vector2();
+
+function setStatus(message){
+ status.textContent=message;
+}
+
+function loadModel(path,type){
+ return new Promise((resolve)=>{
+  loader.load(path,(gltf)=>{
+   const model=gltf.scene;
+
+   model.traverse(obj=>{
+    if(obj.isMesh){
+     obj.castShadow=true;
+     obj.receiveShadow=true;
+     obj.userData.originalMaterial=obj.material;
+    }
+   });
+
+   scene.add(model);
+
+   const box=new THREE.Box3().setFromObject(model);
+   const center=box.getCenter(new THREE.Vector3());
+   model.position.sub(center);
+
+   if(type==="skeleton"){
+    skeleton=model;
+   }else{
+    muscles=model;
+    if(gltf.animations && gltf.animations.length){
+     mixer=new THREE.AnimationMixer(model);
+     animationActions=gltf.animations.map(clip=>{
+      const action=mixer.clipAction(clip);
+      return action;
+     });
+    }
+   }
+
+   resolve(true);
+  },undefined,(error)=>{
+   console.error("Model loading error:",path,error);
+   resolve(false);
+  });
+ });
+}
+
+async function initialize(){
+ setStatus("جاري تحميل النماذج...");
+
+ const results=await Promise.all([
+  loadModel("models/skeleton.glb","skeleton"),
+  loadModel("models/muscles.glb","muscles")
+ ]);
+
+ if(skeleton) skeleton.visible=true;
+ if(muscles) muscles.visible=false;
+
+ if(results[0] || results[1]){
+  setStatus("تم تحميل النماذج المتوفرة");
+ }else{
+  setStatus("لم يتم العثور على ملفات المجسمات");
+  document.getElementById("details").textContent=
+   "أضف ملفات skeleton.glb و muscles.glb داخل مجلد models.";
+ }
+}
+
+initialize();
+
+renderer.domElement.addEventListener("pointerdown",event=>{
+ const rect=renderer.domElement.getBoundingClientRect();
+
+ pointer.x=((event.clientX-rect.left)/rect.width)*2-1;
+ pointer.y=-((event.clientY-rect.top)/rect.height)*2+1;
+
+ raycaster.setFromCamera(pointer,camera);
+
+ const objects=[];
+ if(skeleton && skeleton.visible) objects.push(skeleton);
+ if(muscles && muscles.visible) objects.push(muscles);
+
+ const hits=raycaster.intersectObjects(objects,true);
+
+ if(hits.length){
+  selected=hits[0].object;
+  document.getElementById("name").textContent=
+   selected.name || "جزء تشريحي محدد";
+
+  document.getElementById("details").textContent=
+   "تم تحديد هذا الجزء. يمكنك عزله أو تدوير المجسم وتكبيره.";
+
+  setStatus("تم اختيار: "+(selected.name || "جزء تشريحي"));
+ }
+});
+
+function allMeshes(){
+ const list=[];
+ [skeleton,muscles].forEach(model=>{
+  if(model) model.traverse(obj=>{
+   if(obj.isMesh) list.push(obj);
+  });
+ });
+ return list;
+}
+
+window.showAll=function(){
+ allMeshes().forEach(obj=>obj.visible=true);
+ if(skeleton) skeleton.visible=true;
+ if(muscles) muscles.visible=false;
+ selected=null;
+ document.getElementById("name").textContent="عرض الهيكل الكامل";
+ document.getElementById("details").textContent=
+  "تمت إعادة عرض جميع أجزاء الهيكل العظمي.";
+};
+
+window.isolateSelected=function(){
+ if(!selected){
+  alert("اختر عظمة أو عضلة أولاً");
+  return;
+ }
+
+ allMeshes().forEach(obj=>{
+  obj.visible=(obj===selected);
+ });
+
+ document.getElementById("name").textContent=
+  "وضع العزل: "+(selected.name || "الجزء المحدد");
+};
+
+window.toggleMuscles=function(){
+ if(!muscles){
+  alert("ملف العضلات غير موجود حالياً");
+  return;
+ }
+ muscles.visible=!muscles.visible;
+ document.getElementById("showMuscles").classList.toggle(
+  "active",muscles.visible
+ );
+};
+
+window.toggleSkeleton=function(){
+ if(!skeleton){
+  alert("ملف الهيكل العظمي غير موجود حالياً");
+  return;
+ }
+ skeleton.visible=!skeleton.visible;
+ document.getElementById("showSkeleton").classList.toggle(
+  "active",skeleton.visible
+ );
+};
+
+window.playAnimations=function(){
+ if(!mixer || animationActions.length===0){
+  alert("نموذج العضلات لا يحتوي حالياً على حركات مدمجة.");
+  return;
+ }
+ muscles.visible=true;
+ animationActions.forEach(action=>action.play());
+};
+
+window.stopAnimations=function(){
+ animationActions.forEach(action=>action.stop());
+};
+
+window.zoomCamera=function(direction){
+ const offset=camera.position.clone().sub(controls.target);
+ offset.multiplyScalar(direction>0?.8:1.25);
+ camera.position.copy(controls.target).add(offset);
+};
+
+window.resetCamera=function(){
+ camera.position.copy(originalCameraPosition);
+ controls.target.copy(originalTarget);
+ controls.update();
+};
+
+const clock=new THREE.Clock();
+
+function animate(){
+ requestAnimationFrame(animate);
+ const delta=clock.getDelta();
+ if(mixer) mixer.update(delta);
+ controls.update();
+ renderer.render(scene,camera);
+}
+animate();
+
+window.addEventListener("resize",()=>{
+ camera.aspect=innerWidth/innerHeight;
+ camera.updateProjectionMatrix();
+ renderer.setSize(innerWidth,innerHeight);
+});
+</script>
+</body>
+</html>
