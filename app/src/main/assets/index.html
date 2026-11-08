@@ -172,10 +172,11 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:25px;border-t
 <div class="card" onclick="switchTab('atlas')"><div class="emoji">🦴</div><b>الأطلس التشريحي</b><span class="muted">ادرس البنى التشريحية</span></div>
 <div class="card" onclick="switchTab('terms')"><div class="emoji">📖</div><b>القاموس الطبي</b><span class="muted">عربي وإنجليزي ولاتيني</span></div>
 <div class="card" onclick="switchTab('quiz')"><div class="emoji">🧠</div><b>اختبر نفسك</b><span class="muted">أسئلة لتثبيت المعلومات</span></div>
-</div><div class="card" onclick="window.location.href='anatomy-atlas/index.html'">
+<div class="card" onclick="window.location.href='anatomy-atlas/index.html'">
 <div class="emoji">🦴</div>
 <b>الأطلس التشريحي ثلاثي الأبعاد</b>
 <span class="muted">افتح المجسم التشريحي وتفاعل معه</span>
+</div>
 </div>
 </section>
 
@@ -234,6 +235,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:25px;border-t
 <footer>MAKDAD ANATOMY<br>MEDICAL LEARNING PLATFORM</footer>
 
 <script>
+  
 const systems=[
 {icon:"🦴",ar:"الجهاز الهيكلي",en:"Skeletal System",desc:"يدعم الجسم ويحمي الأعضاء الداخلية ويساهم في الحركة وتكوين خلايا الدم وتخزين المعادن.",parts:"الجمجمة، العمود الفقري، القفص الصدري، الحزام الكتفي، الأطراف العلوية، الحوض، الأطراف السفلية."},
 {icon:"💪",ar:"الجهاز العضلي",en:"Muscular System",desc:"يساهم في حركة الجسم والمحافظة على الوضعية وإنتاج الحرارة.",parts:"العضلات الهيكلية، العضلات الملساء، العضلة القلبية."},
@@ -497,4 +499,3 @@ themeButtons.forEach(b=>b.addEventListener("click",()=>setTheme(b.dataset.themeC
 </script>
 </body>
 </html>
-
