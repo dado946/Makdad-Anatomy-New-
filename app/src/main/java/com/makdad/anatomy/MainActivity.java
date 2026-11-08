@@ -57,19 +57,33 @@ private boolean exitPending = false;
 private final Handler backHandler =
     new Handler(Looper.getMainLooper());
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+   @Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-        getWindow().setStatusBarColor(Color.BLACK);
-        getWindow().setNavigationBarColor(Color.BLACK);
+    getWindow().setStatusBarColor(Color.BLACK);
+    getWindow().setNavigationBarColor(Color.BLACK);
 
-        getWindow().setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
-        );
+    getWindow().setFlags(
+        WindowManager.LayoutParams.FLAG_FULLSCREEN,
+        WindowManager.LayoutParams.FLAG_FULLSCREEN
+    );
 
+    if (hasAtlasIndex()) {
+        openMainPage();
+    } else {
         showSplash();
     }
+}
+
+private boolean hasAtlasIndex() {
+    File installed = new File(
+        getFilesDir(),
+        "atlas-data/bp3d43/index.json"
+    );
+
+    return installed.isFile() && installed.length() > 0;
+} 
 
     private void showSplash() {
 
