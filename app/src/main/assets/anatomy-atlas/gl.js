@@ -156,7 +156,7 @@ class AtlasRenderer {
       canvas.clientWidth / Math.max(1, canvas.clientHeight)
     );
 
-    new ResizeObserver(() => {
+    this._resizeObserver = new ResizeObserver(() => {
       const width = canvas.clientWidth;
       const height = canvas.clientHeight;
 
