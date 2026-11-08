@@ -61,26 +61,72 @@ void main() {
 }`;
 
 function compile(gl, type, src) {
-  const s = gl.createShader(type);
-  gl.shaderSource(s, src);
-  gl.compileShader(s);
-  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
-  return s;
+  const shader = gl.createShader(type);
+
+  if (!shader) {
+    throw new Error('Unable to create WebGL shader.');
+  }
+
+  gl.shaderSource(shader, src);
+  gl.compileShader(shader);
+
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    const error = gl.getShaderInfoLog(shader);
+    gl.deleteShader(shader);
+    throw new Error(error || 'Shader compilation failed.');
+  }
+
+  return shader;
 }
 
 function program(gl, vs, fs) {
   const p = gl.createProgram();
-  gl.attachShader(p, compile(gl, gl.VERTEX_SHADER, vs));
-  gl.attachShader(p, compile(gl, gl.FRAGMENT_SHADER, fs));
-  gl.linkProgram(p);
-  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
-  const u = {};
-  const n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
-  for (let i = 0; i < n; i++) {
-    const info = gl.getActiveUniform(p, i);
-    u[info.name] = gl.getUniformLocation(p, info.name);
+
+  if (!p) {
+    throw new Error('Unable to create WebGL program.');
   }
-  return { p, u };
+
+  const shaders = [];
+
+  try {
+    shaders.push(compile(gl, gl.VERTEX_SHADER, vs));
+    shaders.push(compile(gl, gl.FRAGMENT_SHADER, fs));
+
+    for (const shader of shaders) {
+      gl.attachShader(p, shader);
+    }
+
+    gl.linkProgram(p);
+
+    if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+      throw new Error(
+        gl.getProgramInfoLog(p) || 'Program linking failed.'
+      );
+    }
+
+    const u = {};
+    const n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+
+    for (let i = 0; i < n; i++) {
+      const info = gl.getActiveUniform(p, i);
+      u[info.name] = gl.getUniformLocation(p, info.name);
+    }
+
+    for (const shader of shaders) {
+      gl.detachShader(p, shader);
+      gl.deleteShader(shader);
+    }
+
+    return { p, u };
+
+  } catch (error) {
+    for (const shader of shaders) {
+      gl.deleteShader(shader);
+    }
+
+    gl.deleteProgram(p);
+    throw error;
+  }
 }
 
 const reduceMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
