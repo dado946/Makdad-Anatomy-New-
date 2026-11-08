@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -14,14 +15,18 @@ import android.widget.TextView;
 import android.widget.ProgressBar;
 import android.webkit.WebView;
 import android.webkit.WebSettings;
-import android.webkit.WebViewClient;
-import android.os.Handler;
-import android.os.Looper;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 
 import androidx.webkit.WebViewAssetLoader;
 import androidx.webkit.WebViewClientCompat;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends Activity {
 
@@ -53,12 +58,15 @@ public class MainActivity extends Activity {
             InputStream stream = getAssets().open(
                 "file_00000000e378820aaf66eca8b0dc691e.png"
             );
+
             background.setImageDrawable(
                 android.graphics.drawable.Drawable.createFromStream(
                     stream, null
                 )
             );
+
             stream.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -70,6 +78,7 @@ public class MainActivity extends Activity {
 
         View shade = new View(this);
         shade.setBackgroundColor(Color.argb(95, 0, 0, 0));
+
         root.addView(shade, new FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
@@ -97,23 +106,27 @@ public class MainActivity extends Activity {
         content.addView(subtitle);
         content.addView(loader);
 
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT,
-            Gravity.CENTER
-        );
+        FrameLayout.LayoutParams params =
+            new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                Gravity.CENTER
+            );
+
         params.leftMargin = 20;
         params.rightMargin = 20;
+
         root.addView(content, params);
 
         setContentView(root);
 
-        new Handler(Looper.getMainLooper()).postDelayed(
-            this::openMainPage, 3000
-        );
+        new android.os.Handler(
+            android.os.Looper.getMainLooper()
+        ).postDelayed(this::openMainPage, 3000);
     }
 
     private void openMainPage() {
+
         assetLoader = new WebViewAssetLoader.Builder()
             .addPathHandler(
                 "/assets/",
@@ -131,23 +144,40 @@ public class MainActivity extends Activity {
         settings.setSupportZoom(true);
 
         webView.setWebViewClient(new WebViewClientCompat() {
+
             @Override
-            public android.webkit.WebResourceResponse
-            shouldInterceptRequest(
+            public WebResourceResponse shouldInterceptRequest(
                 WebView view,
-                android.webkit.WebResourceRequest request
+                WebResourceRequest request
             ) {
+
+                String url = request.getUrl().toString();
+
+                WebResourceResponse atlasResponse =
+                    serveAtlasData(url);
+
+                if (atlasResponse != null) {
+                    return atlasResponse;
+                }
+
                 return assetLoader.shouldInterceptRequest(
                     request.getUrl()
                 );
             }
 
             @Override
-            public android.webkit.WebResourceResponse
-            shouldInterceptRequest(
+            public WebResourceResponse shouldInterceptRequest(
                 WebView view,
                 String url
             ) {
+
+                WebResourceResponse atlasResponse =
+                    serveAtlasData(url);
+
+                if (atlasResponse != null) {
+                    return atlasResponse;
+                }
+
                 return assetLoader.shouldInterceptRequest(url);
             }
         });
@@ -156,6 +186,86 @@ public class MainActivity extends Activity {
 
         webView.loadUrl(
             "https://appassets.androidplatform.net/assets/index.html"
+        );
+    }
+
+    private WebResourceResponse serveAtlasData(String url) {
+
+        try {
+            Uri uri = Uri.parse(url);
+            String path = uri.getPath();
+
+            String prefix = "/assets/anatomy-atlas/data/";
+
+            if (path == null || !path.startsWith(prefix)) {
+                return null;
+            }
+
+            String relativePath = path.substring(prefix.length());
+
+            File atlasRoot = new File(
+                getFilesDir(),
+                "atlas-data/bp3d43"
+            );
+
+            File root = atlasRoot.getCanonicalFile();
+            File requested = new File(
+                root,
+                relativePath
+            ).getCanonicalFile();
+
+            String rootPath = root.getPath() + File.separator;
+
+            if (!requested.getPath().startsWith(rootPath)) {
+                return errorResponse(403, "Forbidden");
+            }
+
+            if (!requested.isFile()) {
+                return errorResponse(404, "Atlas file not found");
+            }
+
+            String name = requested.getName().toLowerCase();
+            String mime = "application/octet-stream";
+
+            if (name.endsWith(".json")) {
+                mime = "application/json";
+            } else if (name.endsWith(".txt")) {
+                mime = "text/plain";
+            }
+
+            InputStream input = new FileInputStream(requested);
+
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Cache-Control", "no-cache");
+
+            return new WebResourceResponse(
+                mime,
+                "UTF-8",
+                200,
+                "OK",
+                headers,
+                input
+            );
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return errorResponse(500, "Atlas data error");
+        }
+    }
+
+    private WebResourceResponse errorResponse(
+        int code,
+        String message
+    ) {
+        Map<String, String> headers = new HashMap<>();
+
+        return new WebResourceResponse(
+            "text/plain",
+            "UTF-8",
+            code,
+            message,
+            headers,
+            null
         );
     }
 
@@ -178,4 +288,4 @@ public class MainActivity extends Activity {
             setPadding(20, 20, 20, 20);
         }
     }
-}
+                }
