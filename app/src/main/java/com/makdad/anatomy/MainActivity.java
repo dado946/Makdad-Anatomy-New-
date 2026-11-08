@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -15,15 +14,19 @@ import android.widget.TextView;
 import android.widget.ProgressBar;
 import android.webkit.WebView;
 import android.webkit.WebSettings;
+import android.webkit.WebViewClient;
 import android.os.Handler;
 import android.os.Looper;
-import android.graphics.drawable.GradientDrawable;
+
+import androidx.webkit.WebViewAssetLoader;
+import androidx.webkit.WebViewClientCompat;
 
 import java.io.InputStream;
 
 public class MainActivity extends Activity {
 
     private WebView webView;
+    private WebViewAssetLoader assetLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +54,9 @@ public class MainActivity extends Activity {
                 "file_00000000e378820aaf66eca8b0dc691e.png"
             );
             background.setImageDrawable(
-                android.graphics.drawable.Drawable.createFromStream(stream, null)
+                android.graphics.drawable.Drawable.createFromStream(
+                    stream, null
+                )
             );
             stream.close();
         } catch (Exception e) {
@@ -109,13 +114,49 @@ public class MainActivity extends Activity {
     }
 
     private void openMainPage() {
+        assetLoader = new WebViewAssetLoader.Builder()
+            .addPathHandler(
+                "/assets/",
+                new WebViewAssetLoader.AssetsPathHandler(this)
+            )
+            .build();
+
         webView = new WebView(this);
+
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
-        settings.setAllowFileAccess(true);
+        settings.setAllowFileAccess(false);
+        settings.setAllowContentAccess(false);
+        settings.setSupportZoom(true);
+
+        webView.setWebViewClient(new WebViewClientCompat() {
+            @Override
+            public android.webkit.WebResourceResponse
+            shouldInterceptRequest(
+                WebView view,
+                android.webkit.WebResourceRequest request
+            ) {
+                return assetLoader.shouldInterceptRequest(
+                    request.getUrl()
+                );
+            }
+
+            @Override
+            public android.webkit.WebResourceResponse
+            shouldInterceptRequest(
+                WebView view,
+                String url
+            ) {
+                return assetLoader.shouldInterceptRequest(url);
+            }
+        });
+
         setContentView(webView);
-        webView.loadUrl("file:///android_asset/index.html");
+
+        webView.loadUrl(
+            "https://appassets.androidplatform.net/assets/index.html"
+        );
     }
 
     @Override
