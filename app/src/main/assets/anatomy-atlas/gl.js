@@ -724,5 +724,62 @@ if (!rayValid) {
     this._draw();
     return this.canvas.toDataURL('image/png');
   }
+    dispose() {
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
+      this._resizeObserver = null;
+    }
+
+    if (this._raf) {
+      cancelAnimationFrame(this._raf);
+      this._raf = 0;
+    }
+
+    this.anim = null;
+
+    const gl = this.gl;
+
+    if (this.vao) {
+      gl.deleteVertexArray(this.vao);
+      this.vao = null;
+    }
+
+    if (this.buffers) {
+      for (const buffer of this.buffers) {
+        if (buffer) gl.deleteBuffer(buffer);
       }
+      this.buffers = null;
+    }
+
+    if (this._fbo) {
+      gl.deleteFramebuffer(this._fbo);
+      this._fbo = null;
+    }
+
+    if (this._rbC) {
+      gl.deleteRenderbuffer(this._rbC);
+      this._rbC = null;
+    }
+
+    if (this._rbD) {
+      gl.deleteRenderbuffer(this._rbD);
+      this._rbD = null;
+    }
+
+    if (this.main && this.main.p) {
+      gl.deleteProgram(this.main.p);
+      this.main = null;
+    }
+
+    if (this.pickProg && this.pickProg.p) {
+      gl.deleteProgram(this.pickProg.p);
+      this.pickProg = null;
+    }
+
+    this.n = 0;
+    this.elements = null;
+    this.visible = null;
+    this.selected = null;
+    this.colors = null;
+    }    }
         
