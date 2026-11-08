@@ -781,5 +781,6 @@ if (!rayValid) {
     this.visible = null;
     this.selected = null;
     this.colors = null;
-    }    }
+    } 
+}
         
