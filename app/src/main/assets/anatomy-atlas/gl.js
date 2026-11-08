@@ -97,7 +97,7 @@ class AtlasRenderer {
     this.clip = { on: false, plane: [0, -1, 0, 1] };
     this.xray = false;
     this.selColor = [0.56, 0.86, 0.80];
-    this.background = [0.118, 0.145, 0.180];
+    this.background = [0.502, 0.533, 0.573];
     this.n = 0;
     this.dirty = true;
     this.anim = null;
