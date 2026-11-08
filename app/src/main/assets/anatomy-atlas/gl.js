@@ -538,40 +538,42 @@ requestRender() {
     };
 
     // اختيار المرشحين باستخدام الحدود المكانية.
-    if (invVP) {
-      const near = unproject(-1);
-      const far = unproject(1);
+let rayValid = false;
 
-      if (near && far) {
-        for (let i = 0; i < this.n; i++) {
-          if (!this.visible[i]) continue;
-          if (this.xray && anySel && !this.selected[i]) continue;
+if (invVP) {
+  const near = unproject(-1);
+  const far = unproject(1);
 
-          const box = this.elements[i].b;
+  if (near && far) {
+    rayValid = true;
 
-          // الاحتفاظ بالمجسم إذا كانت حدوده غير متاحة.
-          if (
-            !box ||
-            box.length < 6 ||
-            !box.every(Number.isFinite) ||
-            intersectsBox(near, far, box)
-          ) {
-            candidates.push(i);
-          }
-        }
+    for (let i = 0; i < this.n; i++) {
+      if (!this.visible[i]) continue;
+      if (this.xray && anySel && !this.selected[i]) continue;
+
+      const box = this.elements[i].b;
+
+      if (
+        !box ||
+        box.length < 6 ||
+        !box.every(Number.isFinite) ||
+        intersectsBox(near, far, box)
+      ) {
+        candidates.push(i);
       }
     }
+  }
+}
 
-    // الرجوع إلى الفحص الكامل إذا تعذر إنشاء الشعاع.
-    if (!invVP || candidates.length === 0) {
-      if (!invVP) {
-        for (let i = 0; i < this.n; i++) {
-          if (!this.visible[i]) continue;
-          if (this.xray && anySel && !this.selected[i]) continue;
-          candidates.push(i);
-        }
-      }
-    }
+// الرجوع للفحص الكامل إذا تعذر إنشاء الشعاع.
+if (!rayValid) {
+  for (let i = 0; i < this.n; i++) {
+    if (!this.visible[i]) continue;
+    if (this.xray && anySel && !this.selected[i]) continue;
+
+    candidates.push(i);
+  }
+}
 
     if (!this._fbo || this._fboSize !== W + 'x' + H) {
       if (this._fbo) {
