@@ -136,19 +136,43 @@ class AtlasRenderer {
       this.requestRender();
     }).observe(canvas);
 
-    const loop = (t) => {
-      if (this.anim) this._stepAnim(t);
-      if (this.dirty) {
-        this.dirty = false;
-        this._draw();
-        if (this.onFrame) this.onFrame();
-      }
-      requestAnimationFrame(loop);
-    };
-    requestAnimationFrame(loop);
+    
+this._raf = 0;
+
+const loop = (t) => {
+  this._raf = 0;
+
+  if (this.anim) {
+    this._stepAnim(t);
   }
 
-  requestRender() {
+  if (this.dirty) {
+    this.dirty = false;
+    this._draw();
+
+    if (this.onFrame) {
+      this.onFrame();
+    }
+  }
+
+  if (this.anim && !this._raf) {
+    this._raf = requestAnimationFrame(loop);
+  }
+};
+
+this._renderFrame = loop;
+this.requestRender();
+
+}
+
+requestRender() {
+  this.dirty = true;
+
+  if (this._renderFrame && !this._raf) {
+    this._raf = requestAnimationFrame(this._renderFrame);
+  }
+}
+  
     this.dirty = true;
   }
 
