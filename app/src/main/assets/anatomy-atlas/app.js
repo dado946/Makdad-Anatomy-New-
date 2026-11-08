@@ -857,7 +857,13 @@ drag.lastDy = dy;
       return;
     }
 
-    drag = null;
+    if (allowInertia && drag && drag.moved && !drag.pan) {
+  startInertia();
+} else {
+  inertiaX = 0;
+  inertiaY = 0;
+}
+drag = null;
   }
 
   canvas.addEventListener('pointercancel', e => {
