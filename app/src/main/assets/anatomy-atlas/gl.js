@@ -160,10 +160,13 @@ class AtlasRenderer {
     return { vp: mat4.multiply(mat4.create(), proj, view), eye };
   }
   orbit(dx, dy) {
-    this.anim = null;
-    this.camera.yaw -= dx * 0.006;
-    this.camera.pitch = Math.max(-1.45, Math.min(1.45, this.camera.pitch + dy * 0.006));
-    this.requestRender();
+  this.anim = null;
+  this.camera.yaw -= dx * 0.005;
+  this.camera.pitch = Math.max(
+    -1.52,
+    Math.min(1.52, this.camera.pitch + dy * 0.005)
+  );
+  this.requestRender();
   }
   pan(dx, dy) {
     this.anim = null;
