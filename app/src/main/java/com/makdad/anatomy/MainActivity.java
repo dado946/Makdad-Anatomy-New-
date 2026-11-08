@@ -3,6 +3,8 @@ package com.makdad.anatomy;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -13,6 +15,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ProgressBar;
+import android.widget.Button;
 import android.webkit.WebView;
 import android.webkit.WebSettings;
 import android.webkit.WebResourceRequest;
@@ -33,12 +36,24 @@ public class MainActivity extends Activity {
     private WebView webView;
     private WebViewAssetLoader assetLoader;
 
+    private FrameLayout root;
+    private TextView status;
+    private TextView percent;
+    private ProgressBar progress;
+    private Button retryButton;
+
+    private AtlasDownloader downloader;
+
+    private final Handler handler =
+        new Handler(Looper.getMainLooper());
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         getWindow().setStatusBarColor(Color.BLACK);
         getWindow().setNavigationBarColor(Color.BLACK);
+
         getWindow().setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
@@ -48,7 +63,8 @@ public class MainActivity extends Activity {
     }
 
     private void showSplash() {
-        FrameLayout root = new FrameLayout(this);
+
+        root = new FrameLayout(this);
         root.setBackgroundColor(Color.rgb(5, 10, 20));
 
         ImageView background = new ImageView(this);
@@ -77,14 +93,15 @@ public class MainActivity extends Activity {
         ));
 
         View shade = new View(this);
-        shade.setBackgroundColor(Color.argb(95, 0, 0, 0));
+        shade.setBackgroundColor(Color.argb(110, 0, 0, 0));
 
         root.addView(shade, new FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
         ));
 
-        LinearLayoutHolder content = new LinearLayoutHolder(this);
+        LinearLayoutHolder content =
+            new LinearLayoutHolder(this);
 
         TextView title = new TextView(this);
         title.setText("MAKDAD ANATOMY");
@@ -94,17 +111,50 @@ public class MainActivity extends Activity {
         title.setGravity(Gravity.CENTER);
 
         TextView subtitle = new TextView(this);
-        subtitle.setText("YOUR JOURNEY INTO HUMAN ANATOMY");
+        subtitle.setText(
+            "تجهيز الأطلس التشريحي ثلاثي الأبعاد"
+        );
         subtitle.setTextColor(Color.WHITE);
-        subtitle.setTextSize(11);
+        subtitle.setTextSize(14);
         subtitle.setGravity(Gravity.CENTER);
 
-        ProgressBar loader = new ProgressBar(this);
-        loader.setIndeterminate(true);
+        status = new TextView(this);
+        status.setText("جارٍ التحقق من بيانات التشريح...");
+        status.setTextColor(Color.WHITE);
+        status.setTextSize(13);
+        status.setGravity(Gravity.CENTER);
+
+        progress = new ProgressBar(
+            this,
+            null,
+            android.R.attr.progressBarStyleHorizontal
+        );
+
+        progress.setMax(100);
+        progress.setProgress(0);
+
+        percent = new TextView(this);
+        percent.setText("0%");
+        percent.setTextColor(Color.rgb(232, 195, 85));
+        percent.setTextSize(14);
+        percent.setGravity(Gravity.CENTER);
+
+        retryButton = new Button(this);
+        retryButton.setText("إعادة المحاولة");
+        retryButton.setVisibility(View.GONE);
+        retryButton.setOnClickListener(v -> startAtlasDownload());
+
+        Button continueButton = new Button(this);
+        continueButton.setText("متابعة بدون تنزيل");
+        continueButton.setOnClickListener(v -> openMainPage());
 
         content.addView(title);
         content.addView(subtitle);
-        content.addView(loader);
+        content.addView(status);
+        content.addView(progress);
+        content.addView(percent);
+        content.addView(retryButton);
+        content.addView(continueButton);
 
         FrameLayout.LayoutParams params =
             new FrameLayout.LayoutParams(
@@ -113,16 +163,108 @@ public class MainActivity extends Activity {
                 Gravity.CENTER
             );
 
-        params.leftMargin = 20;
-        params.rightMargin = 20;
+        params.leftMargin = 25;
+        params.rightMargin = 25;
 
         root.addView(content, params);
 
         setContentView(root);
 
-        new android.os.Handler(
-            android.os.Looper.getMainLooper()
-        ).postDelayed(this::openMainPage, 3000);
+        checkAtlasData();
+    }
+
+    private void checkAtlasData() {
+
+        File installed = new File(
+            getFilesDir(),
+            "atlas-data/bp3d43/index.json"
+        );
+
+        if (installed.isFile() && installed.length() > 0) {
+
+            status.setText("بيانات الأطلس جاهزة");
+            progress.setProgress(100);
+            percent.setText("100%");
+
+            handler.postDelayed(
+                this::openMainPage,
+                700
+            );
+
+        } else {
+            startAtlasDownload();
+        }
+    }
+
+    private void startAtlasDownload() {
+
+        retryButton.setVisibility(View.GONE);
+        progress.setProgress(0);
+        percent.setText("0%");
+        status.setText("جارٍ الاتصال بخادم بيانات التشريح...");
+
+        downloader = new AtlasDownloader();
+
+        downloader.start(this, new AtlasDownloader.Listener() {
+
+            @Override
+            public void onProgress(
+                long downloaded,
+                long total
+            ) {
+
+                if (total > 0) {
+
+                    int value = (int) Math.min(
+                        100,
+                        downloaded * 100 / total
+                    );
+
+                    progress.setProgress(value);
+                    percent.setText(value + "%");
+
+                } else {
+
+                    percent.setText(
+                        android.text.format.Formatter.formatFileSize(
+                            MainActivity.this,
+                            downloaded
+                        )
+                    );
+                }
+            }
+
+            @Override
+            public void onStage(String message) {
+                status.setText(message);
+            }
+
+            @Override
+            public void onComplete(File atlasDirectory) {
+
+                status.setText(
+                    "اكتمل تجهيز الأطلس بنجاح"
+                );
+
+                progress.setProgress(100);
+                percent.setText("100%");
+
+                handler.postDelayed(
+                    MainActivity.this::openMainPage,
+                    1000
+                );
+            }
+
+            @Override
+            public void onError(String message) {
+
+                status.setText(
+                    "تعذر تجهيز الأطلس:\n" + message
+                );
+
+                retryButton.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     private void openMainPage() {
@@ -137,6 +279,7 @@ public class MainActivity extends Activity {
         webView = new WebView(this);
 
         WebSettings settings = webView.getSettings();
+
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setAllowFileAccess(false);
@@ -192,16 +335,19 @@ public class MainActivity extends Activity {
     private WebResourceResponse serveAtlasData(String url) {
 
         try {
+
             Uri uri = Uri.parse(url);
             String path = uri.getPath();
 
-            String prefix = "/assets/anatomy-atlas/data/";
+            String prefix =
+                "/assets/anatomy-atlas/data/";
 
             if (path == null || !path.startsWith(prefix)) {
                 return null;
             }
 
-            String relativePath = path.substring(prefix.length());
+            String relativePath =
+                path.substring(prefix.length());
 
             File atlasRoot = new File(
                 getFilesDir(),
@@ -209,23 +355,31 @@ public class MainActivity extends Activity {
             );
 
             File root = atlasRoot.getCanonicalFile();
+
             File requested = new File(
                 root,
                 relativePath
             ).getCanonicalFile();
 
-            String rootPath = root.getPath() + File.separator;
+            String rootPath =
+                root.getPath() + File.separator;
 
             if (!requested.getPath().startsWith(rootPath)) {
                 return errorResponse(403, "Forbidden");
             }
 
             if (!requested.isFile()) {
-                return errorResponse(404, "Atlas file not found");
+                return errorResponse(
+                    404,
+                    "Atlas file not found"
+                );
             }
 
-            String name = requested.getName().toLowerCase();
-            String mime = "application/octet-stream";
+            String name =
+                requested.getName().toLowerCase();
+
+            String mime =
+                "application/octet-stream";
 
             if (name.endsWith(".json")) {
                 mime = "application/json";
@@ -233,9 +387,12 @@ public class MainActivity extends Activity {
                 mime = "text/plain";
             }
 
-            InputStream input = new FileInputStream(requested);
+            InputStream input =
+                new FileInputStream(requested);
 
-            Map<String, String> headers = new HashMap<>();
+            Map<String, String> headers =
+                new HashMap<>();
+
             headers.put("Cache-Control", "no-cache");
 
             return new WebResourceResponse(
@@ -248,8 +405,13 @@ public class MainActivity extends Activity {
             );
 
         } catch (IOException e) {
+
             e.printStackTrace();
-            return errorResponse(500, "Atlas data error");
+
+            return errorResponse(
+                500,
+                "Atlas data error"
+            );
         }
     }
 
@@ -257,7 +419,9 @@ public class MainActivity extends Activity {
         int code,
         String message
     ) {
-        Map<String, String> headers = new HashMap<>();
+
+        Map<String, String> headers =
+            new HashMap<>();
 
         return new WebResourceResponse(
             "text/plain",
@@ -271,6 +435,7 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
+
         if (webView != null && webView.canGoBack()) {
             webView.goBack();
         } else {
@@ -283,9 +448,10 @@ public class MainActivity extends Activity {
 
         public LinearLayoutHolder(Activity activity) {
             super(activity);
+
             setOrientation(VERTICAL);
             setGravity(Gravity.CENTER);
             setPadding(20, 20, 20, 20);
         }
     }
-                }
+}
