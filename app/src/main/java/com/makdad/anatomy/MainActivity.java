@@ -52,7 +52,10 @@ public class MainActivity extends Activity {
 
     private final Handler handler =
         new Handler(Looper.getMainLooper());
+private boolean exitPending = false;
 
+private final Handler backHandler =
+    new Handler(Looper.getMainLooper());
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
