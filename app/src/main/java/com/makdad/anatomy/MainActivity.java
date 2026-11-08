@@ -84,6 +84,14 @@ private boolean hasAtlasIndex() {
 
     return installed.isFile() && installed.length() > 0;
 } 
+    private boolean hasAtlasIndex() {
+    File installed = new File(
+        getFilesDir(),
+        "atlas-data/bp3d43/index.json"
+    );
+
+    return installed.isFile() && installed.length() > 0;
+    }
 
     private void showSplash() {
 
