@@ -1,4 +1,3 @@
-
 name: Build APK
 
 on:
@@ -34,21 +33,30 @@ jobs:
 
           path = Path("app/src/main/AndroidManifest.xml")
           content = path.read_bytes()
-
           content = content.lstrip(b"\xef\xbb\xbf \t\r\n")
           path.write_bytes(content)
-
           ET.parse(path)
           print("Manifest XML is valid")
           PY
 
-      - name: Build APK
-        run: gradle assembleDebug --stacktrace
+      - name: Decode release keystore
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          test -n "$ANDROID_KEYSTORE_BASE64"
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/makdad-release.jks"
+          echo "ANDROID_KEYSTORE_FILE=$RUNNER_TEMP/makdad-release.jks" >> "$GITHUB_ENV"
+
+      - name: Build signed release APK
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: gradle assembleRelease --stacktrace
 
       - name: Upload APK
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: Makdad-Anatomy-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
-          
+          path: app/build/outputs/apk/release/app-release.apk
