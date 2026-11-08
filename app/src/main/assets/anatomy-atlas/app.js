@@ -722,61 +722,145 @@
   // ======================= التحكم والإدخال =======================
 
   function bindStage() {
-    const canvas = $('#viewport');
-    let drag = null;    let hoverTimer = 0;
-    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-    canvas.addEventListener('pointerdown', (e) => {
-      canvas.focus({ preventScroll: true });
-      drag = { x: e.clientX, y: e.clientY, btn: e.button, pan: e.button !== 0 || e.shiftKey, moved: false };
-      canvas.setPointerCapture(e.pointerId);
-      $('#hoverTip').hidden = true;
-    });
-    canvas.addEventListener('pointermove', (e) => {
-      if (drag) {
-        const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-        if (!drag.moved && Math.hypot(dx, dy) < 3) return;
-        drag.moved = true;
-        canvas.classList.add('dragging');
-        drag.x = e.clientX; drag.y = e.clientY;
-        if (drag.pan) renderer.pan(dx, dy); else renderer.orbit(dx, dy);
+  const canvas = $('#viewport');
+  let drag = null;
+  let hoverTimer = 0;
+  const pointers = new Map();
+  let pinchDistance = 0;
+  let pinching = false;
+
+  const distance = (a, b) =>
+    Math.hypot(a.x - b.x, a.y - b.y);
+
+  canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+  canvas.addEventListener('pointerdown', e => {
+    canvas.focus({ preventScroll: true });
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    canvas.setPointerCapture(e.pointerId);
+    clearTimeout(hoverTimer);
+    $('#hoverTip').hidden = true;
+
+    if (pointers.size === 2) {
+      pinching = true;
+      drag = null;
+      const p = [...pointers.values()];
+      pinchDistance = distance(p[0], p[1]);
+    } else if (pointers.size === 1) {
+      drag = {
+        x: e.clientX,
+        y: e.clientY,
+        btn: e.button,
+        pan: e.button !== 0 || e.shiftKey,
+        moved: false
+      };
+    }
+  });
+
+  canvas.addEventListener('pointermove', e => {
+    if (pointers.has(e.pointerId)) {
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    }
+
+    if (pinching && pointers.size >= 2) {
+      const p = [...pointers.values()];
+      const nextDistance = distance(p[0], p[1]);
+
+      if (pinchDistance > 0 && nextDistance > 0) {
+        renderer.zoom(pinchDistance / nextDistance);
+      }
+
+      pinchDistance = nextDistance;
+      return;
+    }
+
+    if (drag) {
+      const dx = e.clientX - drag.x;
+      const dy = e.clientY - drag.y;
+
+      if (!drag.moved && Math.hypot(dx, dy) < 3) return;
+
+      drag.moved = true;
+      canvas.classList.add('dragging');
+      drag.x = e.clientX;
+      drag.y = e.clientY;
+
+      if (drag.pan) renderer.pan(dx, dy);
+      else renderer.orbit(dx, dy);
+      return;
+    }
+
+    if (mode === 'quiz') return;
+
+    clearTimeout(hoverTimer);
+    hoverTimer = setTimeout(() => {
+      const i = renderer.pick(e.clientX, e.clientY);
+      const tip = $('#hoverTip');
+
+      if (i < 0) {
+        tip.hidden = true;
         return;
       }
-      if (mode === 'quiz') return;
-      clearTimeout(hoverTimer);
-      hoverTimer = setTimeout(() => {
-        const i = renderer.pick(e.clientX, e.clientY);
-        const tip = $('#hoverTip');
-        if (i < 0) { tip.hidden = true; return; }
-        const r = canvas.getBoundingClientRect();
-        tip.textContent = atlas.displayName(atlas.conceptOf(i));
-        tip.style.left = (e.clientX - r.left) + 'px';
-        tip.style.top = (e.clientY - r.top) + 'px';
-        tip.hidden = false;
-      }, atlas.index.counts.triangles > 4e6 ? 220 : 80);
-    });
-    canvas.addEventListener('pointerleave', () => { clearTimeout(hoverTimer); $('#hoverTip').hidden = true; });
-    canvas.addEventListener('pointercancel', () => {
-  drag = null;
-  canvas.classList.remove('dragging');
-  clearTimeout(hoverTimer);
-  $('#hoverTip').hidden = true;
-});
-    canvas.addEventListener('pointerup', (e) => {
-      canvas.classList.remove('dragging');
-      if (drag && !drag.moved && drag.btn === 0) {
-        const i = renderer.pick(e.clientX, e.clientY);
-        if (mode === 'quiz') quizPick(i);
-        else if (i < 0) clearSelection();
-        else select(atlas.conceptOf(i));
+
+      const r = canvas.getBoundingClientRect();
+      tip.textContent = atlas.displayName(atlas.conceptOf(i));
+      tip.style.left = (e.clientX - r.left) + 'px';
+      tip.style.top = (e.clientY - r.top) + 'px';
+      tip.hidden = false;
+    }, atlas.index.counts.triangles > 4e6 ? 220 : 80);
+  });
+
+  canvas.addEventListener('pointerleave', () => {
+    clearTimeout(hoverTimer);
+    $('#hoverTip').hidden = true;
+  });
+
+  function endPointer(e) {
+    pointers.delete(e.pointerId);
+    canvas.classList.remove('dragging');
+
+    if (pinching) {
+      if (pointers.size < 2) pinchDistance = 0;
+      if (pointers.size === 0) {
+        pinching = false;
+        drag = null;
       }
-      drag = null;
-    });
-    canvas.addEventListener('dblclick', (e) => {
-      if (mode === 'quiz') return;
+      return;
+    }
+
+    drag = null;
+  }
+
+  canvas.addEventListener('pointercancel', e => {
+    endPointer(e);
+    clearTimeout(hoverTimer);
+    $('#hoverTip').hidden = true;
+  });
+
+  canvas.addEventListener('pointerup', e => {
+    if (!pinching && drag && !drag.moved && drag.btn === 0) {
       const i = renderer.pick(e.clientX, e.clientY);
-      if (i >= 0) select(atlas.conceptOf(i), { focus: true }); else renderer.frame(atlas.index.bbox);
-    });
-    canvas.addEventListener('wheel', (e) => { e.preventDefault(); renderer.zoom(Math.exp(e.deltaY * 0.0012)); }, { passive: false });
+
+      if (mode === 'quiz') quizPick(i);
+      else if (i < 0) clearSelection();
+      else select(atlas.conceptOf(i));
+    }
+
+    endPointer(e);
+  });
+
+  canvas.addEventListener('dblclick', e => {
+    if (mode === 'quiz') return;
+    const i = renderer.pick(e.clientX, e.clientY);
+
+    if (i >= 0) select(atlas.conceptOf(i), { focus: true });
+    else renderer.frame(atlas.index.bbox);
+  });
+
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    renderer.zoom(Math.exp(e.deltaY * 0.0012));
+  }, { passive: false });
   }
 
   function resetAll() {
