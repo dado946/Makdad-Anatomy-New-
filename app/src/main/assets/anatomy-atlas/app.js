@@ -429,7 +429,7 @@
       renderer.view(kind === 'sagittal' ? 'left' : 'front');
       if (kind === 'axial') renderer._animateTo({ yaw: 0.35, pitch: 0.75, dist: renderer.camera.dist, target: renderer.camera.target.slice() });
     }
-                                }
+                                
   
     updatePlane();
   }
