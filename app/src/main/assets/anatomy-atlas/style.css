@@ -650,3 +650,133 @@ dialog { width: min(640px, 94vw); max-height: 90vh; }
 }
 
 /* ===== END SIDEBAR UPDATE ===== */
+
+/* ===== BUNDLE 2: MAXIMIZE ANATOMY VIEWPORT ===== */
+
+/* Desktop and tablet */
+html,
+body {
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+}
+
+#app {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-width: 0;
+  min-height: 0;
+  grid-template-columns: minmax(0, 1fr) 300px 280px;
+  grid-template-rows: 52px minmax(0, 1fr) 30px;
+}
+
+.stage {
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #686d73;
+}
+
+#viewport {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  touch-action: none;
+}
+
+/* Keep the viewer expanded when the sidebar is closed */
+#app.sidebar-collapsed {
+  grid-template-columns: minmax(0, 1fr) 300px 0;
+}
+
+#app.sidebar-collapsed .sidebar {
+  display: none;
+}
+
+/* Mobile layout */
+@media (max-width: 700px) {
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  #app {
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr) minmax(150px, 40vw);
+    grid-template-rows: auto minmax(0, 1fr) minmax(0, 18vh) auto;
+    grid-template-areas:
+      "top top"
+      "stage side"
+      "insp insp"
+      "status status";
+  }
+
+  .topbar {
+    grid-area: top;
+    min-width: 0;
+  }
+
+  .stage {
+    grid-area: stage;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background: #686d73;
+  }
+
+  #viewport {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    display: block;
+    touch-action: none;
+  }
+
+  .sidebar {
+    grid-area: side;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    max-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .inspector {
+    grid-area: insp;
+    min-width: 0;
+    min-height: 0;
+    max-height: 18vh;
+    overflow-y: auto;
+  }
+
+  .statusbar {
+    grid-area: status;
+    min-width: 0;
+  }
+
+  #app.sidebar-collapsed {
+    grid-template-columns: minmax(0, 1fr) 0;
+  }
+
+  #app.sidebar-collapsed .sidebar {
+    display: none;
+  }
+}
+
+/* ===== END BUNDLE 2 ===== */
