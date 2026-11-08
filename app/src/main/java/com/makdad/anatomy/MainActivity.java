@@ -8,6 +8,7 @@ import android.os.Looper;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -18,6 +19,8 @@ import android.widget.ProgressBar;
 import android.widget.Button;
 import android.webkit.WebView;
 import android.webkit.WebSettings;
+import android.webkit.WebChromeClient;
+import android.webkit.ConsoleMessage;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 
@@ -32,6 +35,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends Activity {
+
+    private static final String TAG = "MAKDAD_ANATOMY";
 
     private WebView webView;
     private WebViewAssetLoader assetLoader;
@@ -84,7 +89,7 @@ public class MainActivity extends Activity {
             stream.close();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Splash image error", e);
         }
 
         root.addView(background, new FrameLayout.LayoutParams(
@@ -278,6 +283,12 @@ public class MainActivity extends Activity {
 
         webView = new WebView(this);
 
+        // تفعيل التسريع الرسومي
+        webView.setLayerType(
+            View.LAYER_TYPE_HARDWARE,
+            null
+        );
+
         WebSettings settings = webView.getSettings();
 
         settings.setJavaScriptEnabled(true);
@@ -285,6 +296,28 @@ public class MainActivity extends Activity {
         settings.setAllowFileAccess(false);
         settings.setAllowContentAccess(false);
         settings.setSupportZoom(true);
+
+        // مراقبة أخطاء JavaScript
+        webView.setWebChromeClient(new WebChromeClient() {
+
+            @Override
+            public boolean onConsoleMessage(
+                ConsoleMessage consoleMessage
+            ) {
+
+                Log.e(
+                    TAG,
+                    "JavaScript: "
+                    + consoleMessage.message()
+                    + " | Line: "
+                    + consoleMessage.lineNumber()
+                    + " | Source: "
+                    + consoleMessage.sourceId()
+                );
+
+                return true;
+            }
+        });
 
         webView.setWebViewClient(new WebViewClientCompat() {
 
@@ -321,7 +354,9 @@ public class MainActivity extends Activity {
                     return atlasResponse;
                 }
 
-                return assetLoader.shouldInterceptRequest(Uri.parse(url));
+                return assetLoader.shouldInterceptRequest(
+                    Uri.parse(url)
+                );
             }
         });
 
@@ -406,7 +441,7 @@ public class MainActivity extends Activity {
 
         } catch (IOException e) {
 
-            e.printStackTrace();
+            Log.e(TAG, "Atlas data error", e);
 
             return errorResponse(
                 500,
@@ -454,4 +489,4 @@ public class MainActivity extends Activity {
             setPadding(20, 20, 20, 20);
         }
     }
-}
+                }
