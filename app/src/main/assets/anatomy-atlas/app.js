@@ -539,7 +539,7 @@
     $('#quizNext').focus();
   }
 
-  function quizPick(elIdx) {  function quizPick(elIdx) {
+  function quizPick(elIdx) {
     if (quiz.answered || quiz.type !== 'find' || $('#quizRun').hidden) return;
     if (elIdx < 0) { $('#quizFeedback').textContent = 'Click directly on a structure.'; return; }
     const correct = atlas.concepts[quiz.cur].el.includes(elIdx);
