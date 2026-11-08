@@ -173,8 +173,7 @@ requestRender() {
   }
 }
   
-    this.dirty = true;
-  }
+  
 
   setAtlas(index, bin) {
     const gl = this.gl;
