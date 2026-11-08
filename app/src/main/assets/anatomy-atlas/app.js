@@ -206,7 +206,7 @@
   function treeNode(ci) {
     const c = atlas.concepts[ci];
     const kids = atlas.children(ci, treeKind);
-                  
+      const li = el('li', { role: 'treeitem', 'data-ci': ci });            
     const caret = el('button', { class: 'caret' + (kids.length ? '' : ' leaf'), text: '▸', 'aria-label': 'توسيع', tabindex: kids.length ? '0' : '-1' });
     const eye = el('button', { class: 'eye', html: EYE, title: 'إظهار أو إخفاء' });
     const label = el('button', { class: 'label', text: atlas.displayName(ci), title: atlas.displayName(ci) });
