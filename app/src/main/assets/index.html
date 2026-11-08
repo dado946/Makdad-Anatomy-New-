@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -96,6 +95,67 @@ padding:13px;min-height:115px;cursor:pointer;
 .card .emoji{font-size:27px}
 .card b{display:block;font-size:14px}
 .latin{font-size:11px;color:var(--muted);direction:ltr;text-align:right}
+
+/* بطاقة الأطلس ثلاثي الأبعاد المميزة */
+.card.atlas-3d{
+grid-column:1/-1;
+min-height:155px;
+padding:20px;
+display:flex;
+flex-direction:row;
+align-items:center;
+gap:17px;
+position:relative;
+overflow:hidden;
+border:2px solid var(--accent);
+background:
+radial-gradient(ellipse at left,#dfb85f25,transparent 65%),
+linear-gradient(120deg,var(--panel2),var(--panel));
+box-shadow:0 8px 25px #0005, inset 0 0 25px #dfb85f0c;
+}
+.card.atlas-3d:after{
+content:"";
+position:absolute;
+left:-35px;
+bottom:-65px;
+width:170px;
+height:170px;
+border:1px solid var(--accent);
+border-radius:50%;
+opacity:.16;
+}
+.card.atlas-3d .emoji{
+font-size:55px;
+width:78px;
+height:78px;
+flex-shrink:0;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:18px;
+background:#dfb85f18;
+border:1px solid #dfb85f55;
+}
+.card.atlas-3d .atlas-3d-text{
+position:relative;
+z-index:1;
+}
+.card.atlas-3d b{
+font-size:18px;
+color:var(--accent);
+margin-bottom:4px;
+}
+.card.atlas-3d .muted{font-size:13px}
+.card.atlas-3d .atlas-3d-label{
+display:inline-block;
+margin-top:8px;
+padding:4px 10px;
+border-radius:20px;
+background:var(--accent);
+color:var(--buttonText);
+font-size:11px;
+font-weight:bold;
+}
 .box,.detail{
 background:var(--panel);border:1px solid var(--line);
 border-radius:15px;padding:15px;margin:12px 0;
@@ -119,9 +179,16 @@ border:1px solid var(--line);border-radius:15px;padding:15px;margin:12px 0;
 .answer{display:block;width:100%;text-align:right;margin:8px 0;white-space:normal}
 .correct{color:#36c781}.wrong{color:#ed7373}
 footer{text-align:center;color:var(--muted);font-size:11px;padding:25px;border-top:1px solid var(--line);margin-top:25px}
+
 @media(min-width:650px){
 .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 .hero{padding:30px}
+.card.atlas-3d{grid-column:1/-1}
+}
+@media(max-width:380px){
+.card.atlas-3d{padding:13px;gap:10px}
+.card.atlas-3d .emoji{width:60px;height:60px;font-size:42px}
+.card.atlas-3d b{font-size:15px}
 }
 </style>
 </head>
@@ -167,16 +234,42 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:25px;border-t
 
 <section id="home">
 <div class="section-heading"><h2>مرحباً بك في أطلس التشريح</h2></div>
+
 <div class="grid">
-<div class="card" onclick="switchTab('systems')"><div class="emoji">🫀</div><b>أجهزة الجسم</b><span class="muted">تعرف على أجهزة الإنسان</span></div>
-<div class="card" onclick="switchTab('atlas')"><div class="emoji">🦴</div><b>الأطلس التشريحي</b><span class="muted">ادرس البنى التشريحية</span></div>
-<div class="card" onclick="switchTab('terms')"><div class="emoji">📖</div><b>القاموس الطبي</b><span class="muted">عربي وإنجليزي ولاتيني</span></div>
-<div class="card" onclick="switchTab('quiz')"><div class="emoji">🧠</div><b>اختبر نفسك</b><span class="muted">أسئلة لتثبيت المعلومات</span></div>
-<div class="card" onclick="window.location.href='anatomy-atlas/index.html'">
+
+<div class="card atlas-3d" onclick="window.location.href='anatomy-atlas/index.html'">
 <div class="emoji">🦴</div>
+<div class="atlas-3d-text">
 <b>الأطلس التشريحي ثلاثي الأبعاد</b>
-<span class="muted">افتح المجسم التشريحي وتفاعل معه</span>
+<span class="muted">افتح المجسم التشريحي وتفاعل معه بالدوران والتكبير والاستكشاف.</span>
+<span class="atlas-3d-label">افتح الأطلس ثلاثي الأبعاد ←</span>
 </div>
+</div>
+
+<div class="card" onclick="switchTab('systems')">
+<div class="emoji">🫀</div>
+<b>أجهزة الجسم</b>
+<span class="muted">تعرف على أجهزة الإنسان</span>
+</div>
+
+<div class="card" onclick="switchTab('atlas')">
+<div class="emoji">🦴</div>
+<b>الأطلس التشريحي</b>
+<span class="muted">ادرس البنى التشريحية</span>
+</div>
+
+<div class="card" onclick="switchTab('terms')">
+<div class="emoji">📖</div>
+<b>القاموس الطبي</b>
+<span class="muted">عربي وإنجليزي ولاتيني</span>
+</div>
+
+<div class="card" onclick="switchTab('quiz')">
+<div class="emoji">🧠</div>
+<b>اختبر نفسك</b>
+<span class="muted">أسئلة لتثبيت المعلومات</span>
+</div>
+
 </div>
 </section>
 
@@ -197,8 +290,8 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:25px;border-t
 <div class="feature">
 <div class="feature-icon">🧊</div>
 <h3>المجسمات ثلاثية الأبعاد</h3>
-<p class="muted">تم تجهيز مساحة الأطلس لإضافة نماذج ثلاثية الأبعاد قابلة للدوران والتكبير والتصغير. يلزم إضافة ملفات نماذج تشريحية ثلاثية الأبعاد معتمدة حتى تعمل هذه الميزة.</p>
-<span class="pill">مرحلة التطوير التالية</span>
+<p class="muted">يمكن فتح مساحة الأطلس ثلاثي الأبعاد من البطاقة الرئيسية. يعتمد ظهور المجسمات على وجود ملفات النماذج التشريحية داخل مجلد الأطلس.</p>
+<button class="primary" onclick="window.location.href='anatomy-atlas/index.html'">فتح الأطلس ثلاثي الأبعاد</button>
 </div>
 </section>
 
@@ -234,97 +327,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:25px;border-t
 
 <footer>MAKDAD ANATOMY<br>MEDICAL LEARNING PLATFORM</footer>
 
-<script>
-  
-const systems=[
-{icon:"🦴",ar:"الجهاز الهيكلي",en:"Skeletal System",desc:"يدعم الجسم ويحمي الأعضاء الداخلية ويساهم في الحركة وتكوين خلايا الدم وتخزين المعادن.",parts:"الجمجمة، العمود الفقري، القفص الصدري، الحزام الكتفي، الأطراف العلوية، الحوض، الأطراف السفلية."},
-{icon:"💪",ar:"الجهاز العضلي",en:"Muscular System",desc:"يساهم في حركة الجسم والمحافظة على الوضعية وإنتاج الحرارة.",parts:"العضلات الهيكلية، العضلات الملساء، العضلة القلبية."},
-{icon:"🧠",ar:"الجهاز العصبي",en:"Nervous System",desc:"يستقبل المعلومات الحسية ويعالجها وينسق الاستجابات الحركية والوظائف الحيوية.",parts:"الدماغ، النخاع الشوكي، الأعصاب القحفية، الأعصاب الشوكية، العقد العصبية."},
-{icon:"❤️",ar:"الجهاز القلبي الوعائي",en:"Cardiovascular System",desc:"ينقل الدم والأكسجين والمواد الغذائية والهرمونات ويساهم في إزالة الفضلات.",parts:"القلب، الشرايين، الأوردة، الشعيرات الدموية."},
-{icon:"🫁",ar:"الجهاز التنفسي",en:"Respiratory System",desc:"يساهم في تبادل الغازات بين الهواء والدم.",parts:"الأنف، التجويف الأنفي، البلعوم، الحنجرة، الرغامى، القصبات، الرئتان."},
-{icon:"🍽️",ar:"الجهاز الهضمي",en:"Digestive System",desc:"يهضم الطعام ويمتص المغذيات والماء ويساعد على التخلص من الفضلات.",parts:"الفم، البلعوم، المريء، المعدة، الأمعاء الدقيقة، الأمعاء الغليظة، الكبد، البنكرياس."},
-{icon:"🫘",ar:"الجهاز البولي",en:"Urinary System",desc:"يساعد على طرح الفضلات وتنظيم توازن الماء والأملاح.",parts:"الكليتان، الحالبان، المثانة البولية، الإحليل."},
-{icon:"🧬",ar:"جهاز الغدد الصماء",en:"Endocrine System",desc:"ينظم وظائف الجسم من خلال إفراز الهرمونات.",parts:"الغدة النخامية، الدرقية، جارات الدرق، الكظرية، البنكرياس، الغدد التناسلية."},
-{icon:"🛡️",ar:"الجهاز اللمفاوي والمناعي",en:"Lymphatic & Immune System",desc:"يساهم في الدفاع المناعي وإعادة السوائل إلى الدورة الدموية.",parts:"الأوعية اللمفاوية، العقد اللمفاوية، الطحال، الغدة الزعترية، اللوزتان."},
-{icon:"🧍",ar:"الجهاز التناسلي",en:"Reproductive System",desc:"يضم الأعضاء المسؤولة عن الوظائف التناسلية.",parts:"الأعضاء التناسلية الذكرية والأنثوية."},
-{icon:"🧴",ar:"الجهاز اللحافي",en:"Integumentary System",desc:"يشكل حاجزاً واقياً ويساهم في تنظيم درجة الحرارة والإحساس.",parts:"الجلد، الشعر، الأظافر، الغدد العرقية، الغدد الدهنية."}
-];
-
-const atlas=[
-{cat:"skeleton",icon:"🦴",ar:"الهيكل العظمي",en:"Skeletal Atlas",items:[
-["الجمجمة","Skull","Cranium","الرأس","تحمي الدماغ وتدعم تراكيب الوجه."],
-["العظم الجبهي","Frontal Bone","Os frontale","مقدمة الجمجمة","يشكل الجبهة ويساهم في سقف الحجاج."],
-["العظم الجداري","Parietal Bone","Os parietale","قبة الجمجمة","يشكل جزءاً كبيراً من سقف وجانبي القحف."],
-["العظم الصدغي","Temporal Bone","Os temporale","جانبا قاعدة الجمجمة","يحتوي تراكيب مرتبطة بالسمع والتوازن."],
-["العظم القذالي","Occipital Bone","Os occipitale","خلف وقاعدة الجمجمة","يحيط بالثقبة العظمى ويتصل بالعمود الفقري."],
-["الفك السفلي","Mandible","Mandibula","أسفل الوجه","العظم المتحرك الرئيسي في الجمجمة."],
-["الترقوة","Clavicle","Clavicula","أعلى الصدر","تصل الطرف العلوي بالهيكل المحوري عبر القص."],
-["لوح الكتف","Scapula","Scapula","السطح الخلفي للصدر","يساهم في تشكيل مفصل الكتف."],
-["عظم القص","Sternum","Sternum","منتصف الصدر","يتصل بغضاريف أضلاع عديدة."],
-["الضلع","Rib","Costa","القفص الصدري","يساهم في حماية القلب والرئتين."],
-["الفقرات العنقية","Cervical Vertebrae","Vertebrae cervicales","الرقبة","سبع فقرات تدعم الرأس وتسمح بحركة الرقبة."],
-["الفقرات الصدرية","Thoracic Vertebrae","Vertebrae thoracicae","منتصف الظهر","ترتبط بالأضلاع."],
-["الفقرات القطنية","Lumbar Vertebrae","Vertebrae lumbales","أسفل الظهر","تحمل جزءاً كبيراً من وزن الجذع."],
-["العجز","Sacrum","Os sacrum","قاعدة العمود الفقري","يتصل بعظمي الحوض."],
-["عظم العضد","Humerus","Humerus","الذراع","العظم الطويل بين الكتف والمرفق."],
-["الكعبرة","Radius","Radius","الساعد","تقع في جهة الإبهام في الوضع التشريحي."],
-["الزند","Ulna","Ulna","الساعد","يساهم في تشكيل مفصل المرفق."],
-["عظام الرسغ","Carpal Bones","Ossa carpi","المعصم","ثمانية عظام صغيرة في كل رسغ."],
-["عظم الفخذ","Femur","Femur","الفخذ","أطول عظام الجسم."],
-["الرضفة","Patella","Patella","مقدمة الركبة","عظم سمسمي يحمي مقدمة مفصل الركبة."],
-["الظنبوب","Tibia","Tibia","الساق","العظم الإنسي الأكبر في الساق."],
-["الشظية","Fibula","Fibula","الجانب الوحشي للساق","تساهم في ثبات منطقة الكاحل."],
-["عظام الرصغ","Tarsal Bones","Ossa tarsi","الكاحل","مجموعة عظام تشكل الجزء الخلفي من القدم."]
-]},
-{cat:"muscles",icon:"💪",ar:"العضلات",en:"Muscular Atlas",items:[
-["العضلة الدالية","Deltoid","Musculus deltoideus","الكتف","تساهم في تبعيد الذراع وحركات الكتف."],
-["العضلة ذات الرأسين العضدية","Biceps Brachii","Biceps brachii","مقدمة الذراع","تثني المرفق وتساهم في استلقاء الساعد."],
-["العضلة ثلاثية الرؤوس العضدية","Triceps Brachii","Triceps brachii","خلف الذراع","تساهم في بسط المرفق."],
-["العضلة الصدرية الكبرى","Pectoralis Major","Pectoralis major","مقدمة الصدر","تساهم في تقريب الذراع ودورانه للداخل."],
-["العضلة شبه المنحرفة","Trapezius","Trapezius","أعلى الظهر والرقبة","تحرك وتثبت لوح الكتف."],
-["العضلة الظهرية العريضة","Latissimus Dorsi","Latissimus dorsi","أسفل وجانب الظهر","تساهم في بسط الذراع وتقريبه."],
-["العضلة المستقيمة البطنية","Rectus Abdominis","Rectus abdominis","جدار البطن الأمامي","تساهم في ثني الجذع."],
-["العضلة الألوية الكبرى","Gluteus Maximus","Gluteus maximus","منطقة الإلية","تساهم في بسط مفصل الورك."],
-["العضلة رباعية الرؤوس الفخذية","Quadriceps Femoris","Quadriceps femoris","مقدمة الفخذ","تساهم في بسط الركبة."],
-["العضلات المأبضية","Hamstrings","Ischiocrural muscles","خلف الفخذ","تساهم في ثني الركبة وبسط الورك."],
-["العضلة التوأمية","Gastrocnemius","Gastrocnemius","خلف الساق","تساهم في الثني الأخمصي للقدم."],
-["العضلة النعلية","Soleus","Soleus","عمق خلف الساق","تساهم في الثني الأخمصي للكاحل."]
-]},
-{cat:"nerves",icon:"🧠",ar:"الجهاز العصبي",en:"Nervous Atlas",items:[
-["المخ","Cerebrum","Cerebrum","الجزء الأكبر من الدماغ","مرتبط بالإدراك والحركة الإرادية والوظائف المعرفية."],
-["المخيخ","Cerebellum","Cerebellum","خلف وأسفل الدماغ","يساهم في تنسيق الحركة والتوازن."],
-["جذع الدماغ","Brainstem","Truncus encephali","بين الدماغ والنخاع الشوكي","يضم الدماغ المتوسط والجسر والنخاع المستطيل."],
-["النخاع الشوكي","Spinal Cord","Medulla spinalis","داخل القناة الفقرية","ينقل الإشارات العصبية ويشارك في المنعكسات."],
-["العصب الشمي","Olfactory Nerve","Nervus olfactorius","الجمجمة","العصب القحفي الأول، مرتبط بحاسة الشم."],
-["العصب البصري","Optic Nerve","Nervus opticus","من العين إلى الدماغ","ينقل المعلومات البصرية."],
-["العصب ثلاثي التوائم","Trigeminal Nerve","Nervus trigeminus","منطقة الوجه","مرتبط بإحساس الوجه وبعض وظائف المضغ."],
-["العصب الوجهي","Facial Nerve","Nervus facialis","منطقة الوجه","يعصب معظم عضلات التعبير الوجهي."],
-["العصب المبهم","Vagus Nerve","Nervus vagus","الرقبة والصدر والبطن","يساهم في تنظيم وظائف أحشائية عديدة."],
-["العصب الوركي","Sciatic Nerve","Nervus ischiadicus","منطقة الإلية والطرف السفلي","أحد أكبر الأعصاب في الجسم."]
-]},
-{cat:"organs",icon:"❤️",ar:"الأعضاء والأوعية",en:"Organs & Vessels",items:[
-["القلب","Heart","Cor","المنصف في الصدر","يضخ الدم عبر الدوران الرئوي والجهازي."],
-["الرئة اليمنى","Right Lung","Pulmo dexter","يمين التجويف الصدري","تتكون من ثلاثة فصوص."],
-["الرئة اليسرى","Left Lung","Pulmo sinister","يسار التجويف الصدري","تتكون من فصين وتجاورها الثلمة القلبية."],
-["الكبد","Liver","Hepar","الربع العلوي الأيمن من البطن غالباً","يساهم في الاستقلاب وإنتاج الصفراء."],
-["المعدة","Stomach","Gaster","أعلى البطن","تبدأ فيها مراحل مهمة من هضم الطعام."],
-["البنكرياس","Pancreas","Pancreas","خلف المعدة","له وظائف صماء وخارجية الإفراز."],
-["الطحال","Spleen","Lien","أعلى يسار البطن","يساهم في وظائف مناعية وترشيح الدم."],
-["الكلية","Kidney","Ren","خلف الصفاق","ترشح الدم وتساهم في تنظيم السوائل."],
-["المريء","Esophagus","Oesophagus","بين البلعوم والمعدة","ينقل الطعام إلى المعدة."],
-["الأمعاء الدقيقة","Small Intestine","Intestinum tenue","التجويف البطني","الموقع الرئيسي لامتصاص المغذيات."],
-["الأمعاء الغليظة","Large Intestine","Intestinum crassum","التجويف البطني والحوض","تمتص الماء وتساهم في تكوين البراز."],
-["الشريان الأبهر","Aorta","Aorta","الصدر والبطن","أكبر شريان في الجسم."],
-["الوريد الأجوف العلوي","Superior Vena Cava","Vena cava superior","الصدر","يعيد الدم من مناطق الجسم العلوية إلى القلب."],
-["الوريد الأجوف السفلي","Inferior Vena Cava","Vena cava inferior","البطن والصدر","يعيد الدم من المناطق السفلية إلى القلب."]
-]}
-];
-
-const terms=[
-["عظم","Bone","Os"],["مفصل","Joint","Articulatio"],
-["غضروف","Cartilage","Cartilago"],["عضلة","Muscle","Musculus"],
-["وتر","Tendon","Tendo"],["رباط","Ligament","Ligamentum"],
-["عصب","Nerve","Nervus"],["شريان","Artery","Arteria"],
+<script>["عصب","Nerve","Nervus"],["شريان","Artery","Arteria"],
 ["وريد","Vein","Vena"],["شعيرة دموية","Capillary","Vas capillare"],
 ["جمجمة","Skull","Cranium"],["لوح الكتف","Scapula","Scapula"],
 ["عظم الفخذ","Femur","Femur"],["القص","Sternum","Sternum"],
@@ -341,161 +344,281 @@ const terms=[
 ];
 
 function switchTab(id){
-document.querySelectorAll(".tab").forEach(b=>{
-b.classList.toggle("active",b.dataset.tab===id);
-});
-["home","systems","atlas","terms","quiz","about"].forEach(s=>{
-document.getElementById(s).classList.toggle("hidden",s!==id);
-});
-window.scrollTo({top:0,behavior:"smooth"});
+  document.querySelectorAll(".tab").forEach(b=>{
+    b.classList.toggle("active",b.dataset.tab===id);
+  });
+
+  ["home","systems","atlas","terms","quiz","about"].forEach(s=>{
+    document.getElementById(s).classList.toggle("hidden",s!==id);
+  });
+
+  window.scrollTo({top:0,behavior:"smooth"});
 }
+
 document.querySelectorAll(".tab").forEach(b=>{
-b.addEventListener("click",()=>switchTab(b.dataset.tab));
+  b.addEventListener("click",()=>switchTab(b.dataset.tab));
 });
 
 function renderSystems(query=""){
-const target=document.getElementById("systemCards");
-target.innerHTML="";
-systems.filter(s=>(s.ar+" "+s.en).toLowerCase().includes(query.toLowerCase())).forEach(s=>{
-const card=document.createElement("div");
-card.className="card";
-card.innerHTML=`<div class="emoji">${s.icon}</div><b>${s.ar}</b><div class="latin">${s.en}</div>`;
-card.onclick=()=>{
-const d=document.getElementById("systemDetail");
-d.classList.remove("hidden");
-d.innerHTML=`<h2>${s.ar}</h2><div class="latin">${s.en}</div>
-<div class="detail-row"><div class="detail-label">التعريف والوظيفة</div><p>${s.desc}</p></div>
-<div class="detail-row"><div class="detail-label">المكونات الرئيسية</div><p>${s.parts}</p></div>`;
-d.scrollIntoView({behavior:"smooth",block:"nearest"});
-};
-target.appendChild(card);
-});
+  const target=document.getElementById("systemCards");
+  target.innerHTML="";
+
+  systems.filter(s=>(s.ar+" "+s.en).toLowerCase().includes(query.toLowerCase())).forEach(s=>{
+    const card=document.createElement("div");
+    card.className="card";
+
+    card.innerHTML=`<div class="emoji">${s.icon}</div>
+      <b>${s.ar}</b>
+      <div class="latin">${s.en}</div>`;
+
+    card.onclick=()=>{
+      const d=document.getElementById("systemDetail");
+      d.classList.remove("hidden");
+
+      d.innerHTML=`<h2>${s.ar}</h2>
+        <div class="latin">${s.en}</div>
+        <div class="detail-row">
+          <div class="detail-label">التعريف والوظيفة</div>
+          <p>${s.desc}</p>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">المكونات الرئيسية</div>
+          <p>${s.parts}</p>
+        </div>`;
+
+      d.scrollIntoView({behavior:"smooth",block:"nearest"});
+    };
+
+    target.appendChild(card);
+  });
 }
+
 renderSystems();
-document.getElementById("systemSearch").addEventListener("input",e=>renderSystems(e.target.value));
+
+document.getElementById("systemSearch").addEventListener("input",e=>{
+  renderSystems(e.target.value);
+});
 
 function renderAtlas(query=""){
-const target=document.getElementById("atlasCards");
-target.innerHTML="";
-atlas.forEach(group=>{
-const matches=group.items.filter(item=>item.join(" ").toLowerCase().includes(query.toLowerCase()));
-if(!matches.length)return;
-const heading=document.createElement("div");
-heading.style.gridColumn="1/-1";
-heading.innerHTML=`<h3 style="color:var(--accent);margin:10px 0 0">${group.icon} ${group.ar} <span class="latin">${group.en}</span></h3>`;
-target.appendChild(heading);
-matches.forEach(item=>{
-const card=document.createElement("div");
-card.className="card";
-card.innerHTML=`<b>${item[0]}</b><div class="latin">${item[1]}</div><div class="muted">${item[3]}</div>`;
-card.onclick=()=>{
-const d=document.getElementById("atlasDetail");
-d.classList.remove("hidden");
-d.innerHTML=`<h2>${item[0]}</h2>
-<div class="detail-row"><div class="detail-label">English</div><div class="latin">${item[1]}</div></div>
-<div class="detail-row"><div class="detail-label">Latin</div><div class="latin">${item[2]}</div></div>
-<div class="detail-row"><div class="detail-label">الموقع التشريحي</div><p>${item[3]}</p></div>
-<div class="detail-row"><div class="detail-label">الوظيفة أو الأهمية</div><p>${item[4]}</p></div>
-<p class="muted">ملاحظة: هذه بطاقة تعريفية تعليمية مختصرة، ويمكن توسيعها لاحقاً بإضافة المنشأ والارتكاز والتعصيب والتروية الدموية والعلاقات التشريحية.</p>`;
-d.scrollIntoView({behavior:"smooth",block:"nearest"});
-};
-target.appendChild(card);
-});
-});
+  const target=document.getElementById("atlasCards");
+  target.innerHTML="";
+
+  atlas.forEach(group=>{
+    const matches=group.items.filter(item=>
+      item.join(" ").toLowerCase().includes(query.toLowerCase())
+    );
+
+    if(!matches.length)return;
+
+    const heading=document.createElement("div");
+    heading.style.gridColumn="1/-1";
+
+    heading.innerHTML=`<h3 style="color:var(--accent);margin:10px 0 0">
+      ${group.icon} ${group.ar}
+      <span class="latin">${group.en}</span>
+    </h3>`;
+
+    target.appendChild(heading);
+
+    matches.forEach(item=>{
+      const card=document.createElement("div");
+      card.className="card";
+
+      card.innerHTML=`<b>${item[0]}</b>
+        <div class="latin">${item[1]}</div>
+        <div class="muted">${item[3]}</div>`;
+
+      card.onclick=()=>{
+        const d=document.getElementById("atlasDetail");
+        d.classList.remove("hidden");
+
+        d.innerHTML=`<h2>${item[0]}</h2>
+          <div class="detail-row">
+            <div class="detail-label">English</div>
+            <div class="latin">${item[1]}</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Latin</div>
+            <div class="latin">${item[2]}</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">الموقع التشريحي</div>
+            <p>${item[3]}</p>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">الوظيفة أو الأهمية</div>
+            <p>${item[4]}</p>
+          </div>
+          <p class="muted">
+            ملاحظة: هذه بطاقة تعريفية تعليمية مختصرة، ويمكن توسيعها لاحقاً بإضافة المنشأ والارتكاز والتعصيب والتروية الدموية والعلاقات التشريحية.
+          </p>`;
+
+        d.scrollIntoView({behavior:"smooth",block:"nearest"});
+      };
+
+      target.appendChild(card);
+    });
+  });
 }
+
 renderAtlas();
+
 document.getElementById("atlasSearch").addEventListener("input",e=>{
-document.getElementById("atlasDetail").classList.add("hidden");
-renderAtlas(e.target.value);
+  document.getElementById("atlasDetail").classList.add("hidden");
+  renderAtlas(e.target.value);
 });
 
 function renderTerms(query=""){
-const target=document.getElementById("termsList");
-const found=terms.filter(t=>t.join(" ").toLowerCase().includes(query.toLowerCase()));
-target.innerHTML=found.map(t=>`
-<div class="detail-row">
-<b>${t[0]}</b>
-<div class="latin">English: ${t[1]}</div>
-<div class="latin">Latin: ${t[2]}</div>
-</div>`).join("")||'<p class="muted">لا توجد نتائج مطابقة.</p>';
+  const target=document.getElementById("termsList");
+
+  const found=terms.filter(t=>
+    t.join(" ").toLowerCase().includes(query.toLowerCase())
+  );
+
+  target.innerHTML=found.map(t=>`
+    <div class="detail-row">
+      <b>${t[0]}</b>
+      <div class="latin">English: ${t[1]}</div>
+      <div class="latin">Latin: ${t[2]}</div>
+    </div>
+  `).join("")||'<p class="muted">لا توجد نتائج مطابقة.</p>';
 }
+
 renderTerms();
-document.getElementById("termSearch").addEventListener("input",e=>renderTerms(e.target.value));
+
+document.getElementById("termSearch").addEventListener("input",e=>{
+  renderTerms(e.target.value);
+});
 
 const questions=[
-["ما الوحدة الأساسية للجهاز الهيكلي؟",["العظم","العصب","العضلة"],0],
-["ما العضو الذي يضخ الدم؟",["الرئة","القلب","الكبد"],1],
-["ما البنية التي تصل العضلة بالعظم؟",["الرباط","الوتر","الغضروف"],1],
-["ما الجزء المركزي من الجهاز العصبي؟",["الدماغ والنخاع الشوكي","القلب","الكليتان"],0],
-["ما الأوعية التي تعيد الدم نحو القلب غالباً؟",["الشرايين","الأوردة","الشعيرات"],1],
-["كم عدد الفقرات العنقية عادة؟",["5","7","12"],1],
-["ما أطول عظم في جسم الإنسان؟",["عظم الفخذ","عظم العضد","الظنبوب"],0],
-["أين توجد العضلة الدالية؟",["الكتف","الساق","البطن"],0],
-["ما وظيفة الحجاب الحاجز الأساسية؟",["المساعدة في التنفس","ضخ الدم","هضم الطعام"],0],
-["أي عضو يساهم في ترشيح الدم وتكوين البول؟",["الكبد","الكلية","الطحال"],1]
+  ["ما الوحدة الأساسية للجهاز الهيكلي؟",["العظم","العصب","العضلة"],0],
+  ["ما العضو الذي يضخ الدم؟",["الرئة","القلب","الكبد"],1],
+  ["ما البنية التي تصل العضلة بالعظم؟",["الرباط","الوتر","الغضروف"],1],
+  ["ما الجزء المركزي من الجهاز العصبي؟",["الدماغ والنخاع الشوكي","القلب","الكليتان"],0],
+  ["ما الأوعية التي تعيد الدم نحو القلب غالباً؟",["الشرايين","الأوردة","الشعيرات"],1],
+  ["كم عدد الفقرات العنقية عادة؟",["5","7","12"],1],
+  ["ما أطول عظم في جسم الإنسان؟",["عظم الفخذ","عظم العضد","الظنبوب"],0],
+  ["أين توجد العضلة الدالية؟",["الكتف","الساق","البطن"],0],
+  ["ما وظيفة الحجاب الحاجز الأساسية؟",["المساعدة في التنفس","ضخ الدم","هضم الطعام"],0],
+  ["أي عضو يساهم في ترشيح الدم وتكوين البول؟",["الكبد","الكلية","الطحال"],1]
 ];
+
 let qi=0,points=0,answered=false;
+
 function showQuestion(){
-answered=false;
-const q=questions[qi];
-document.getElementById("question").innerHTML=`<b>السؤال ${qi+1} من ${questions.length}: ${q[0]}</b>`;
-document.getElementById("answers").innerHTML="";
-q[1].forEach((answer,index)=>{
-const b=document.createElement("button");
-b.className="answer";
-b.textContent=answer;
-b.onclick=()=>{
-if(answered)return;
-answered=true;
-if(index===q[2]){
-points++;
-document.getElementById("feedback").innerHTML='<span class="correct">إجابة صحيحة!</span>';
-}else{
-document.getElementById("feedback").innerHTML=`<span class="wrong">الإجابة الصحيحة: ${q[1][q[2]]}</span>`;
+  answered=false;
+
+  const q=questions[qi];
+
+  document.getElementById("question").innerHTML=
+    `<b>السؤال ${qi+1} من ${questions.length}: ${q[0]}</b>`;
+
+  document.getElementById("answers").innerHTML="";
+
+  q[1].forEach((answer,index)=>{
+    const b=document.createElement("button");
+    b.className="answer";
+    b.textContent=answer;
+
+    b.onclick=()=>{
+      if(answered)return;
+
+      answered=true;
+
+      if(index===q[2]){
+        points++;
+        document.getElementById("feedback").innerHTML=
+          '<span class="correct">إجابة صحيحة!</span>';
+      }else{
+        document.getElementById("feedback").innerHTML=
+          `<span class="wrong">الإجابة الصحيحة: ${q[1][q[2]]}</span>`;
+      }
+
+      document.getElementById("score").textContent=
+        `النتيجة: ${points} من ${qi+1}`;
+    };
+
+    document.getElementById("answers").appendChild(b);
+  });
+
+  document.getElementById("feedback").textContent="";
+  document.getElementById("score").textContent=
+    `النتيجة الحالية: ${points}`;
+
+  document.getElementById("next").textContent=
+    qi===questions.length-1?"عرض النتيجة":"السؤال التالي";
 }
-document.getElementById("score").textContent=`النتيجة: ${points} من ${qi+1}`;
-};
-document.getElementById("answers").appendChild(b);
-});
-document.getElementById("feedback").textContent="";
-document.getElementById("score").textContent=`النتيجة الحالية: ${points}`;
-document.getElementById("next").textContent=qi===questions.length-1?"عرض النتيجة":"السؤال التالي";
-}
+
 showQuestion();
+
 document.getElementById("next").onclick=()=>{
-if(!answered){
-document.getElementById("feedback").textContent="اختر إجابة أولاً.";
-return;
-}
-if(qi<questions.length-1){
-qi++;
-showQuestion();
-}else{
-document.getElementById("question").innerHTML=`<h2>انتهى الاختبار!</h2><p>نتيجتك النهائية: ${points} من ${questions.length}</p>`;
-document.getElementById("answers").innerHTML="";
-document.getElementById("feedback").textContent="يمكنك إعادة الاختبار للمراجعة.";
-document.getElementById("next").classList.add("hidden");
-}
-};
-document.getElementById("restart").onclick=()=>{
-qi=0;points=0;
-document.getElementById("next").classList.remove("hidden");
-showQuestion();
+  if(!answered){
+    document.getElementById("feedback").textContent="اختر إجابة أولاً.";
+    return;
+  }
+
+  if(qi<questions.length-1){
+    qi++;
+    showQuestion();
+  }else{
+    document.getElementById("question").innerHTML=
+      `<h2>انتهى الاختبار!</h2>
+       <p>نتيجتك النهائية: ${points} من ${questions.length}</p>`;
+
+    document.getElementById("answers").innerHTML="";
+    document.getElementById("feedback").textContent=
+      "يمكنك إعادة الاختبار للمراجعة.";
+
+    document.getElementById("next").classList.add("hidden");
+  }
 };
 
-const themeColors={gold:"#080f19",blue:"#071525",purple:"#130c20",white:"#f3f5f8"};
+document.getElementById("restart").onclick=()=>{
+  qi=0;
+  points=0;
+  document.getElementById("next").classList.remove("hidden");
+  showQuestion();
+};
+
+const themeColors={
+  gold:"#080f19",
+  blue:"#071525",
+  purple:"#130c20",
+  white:"#f3f5f8"
+};
+
 const themeButtons=document.querySelectorAll("[data-theme-choice]");
+
 function setTheme(theme){
-if(!Object.keys(themeColors).includes(theme))theme="gold";
-document.body.dataset.theme=theme;
-document.querySelector('meta[name="theme-color"]').content=themeColors[theme];
-themeButtons.forEach(b=>b.classList.toggle("selected",b.dataset.themeChoice===theme));
-try{localStorage.setItem("makdad-anatomy-theme",theme)}catch(e){}
+  if(!Object.keys(themeColors).includes(theme))theme="gold";
+
+  document.body.dataset.theme=theme;
+
+  document.querySelector('meta[name="theme-color"]').content=
+    themeColors[theme];
+
+  themeButtons.forEach(b=>{
+    b.classList.toggle("selected",b.dataset.themeChoice===theme);
+  });
+
+  try{
+    localStorage.setItem("makdad-anatomy-theme",theme);
+  }catch(e){}
 }
+
 let savedTheme="gold";
-try{savedTheme=localStorage.getItem("makdad-anatomy-theme")||"gold"}catch(e){}
+
+try{
+  savedTheme=localStorage.getItem("makdad-anatomy-theme")||"gold";
+}catch(e){}
+
 setTheme(savedTheme);
-themeButtons.forEach(b=>b.addEventListener("click",()=>setTheme(b.dataset.themeChoice)));
+
+themeButtons.forEach(b=>{
+  b.addEventListener("click",()=>setTheme(b.dataset.themeChoice));
+});
+
 </script>
+
 </body>
 </html>
