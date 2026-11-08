@@ -806,6 +806,10 @@ let inertiaFrame = null;
       drag.moved = true;
       drag.lastDx = dx;
 drag.lastDy = dy;
+            if (!drag.pan) {
+        inertiaX = dx;
+        inertiaY = dy;
+            }
       canvas.classList.add('dragging');
       drag.x = e.clientX;
       drag.y = e.clientY;
