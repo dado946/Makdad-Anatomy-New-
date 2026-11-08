@@ -727,6 +727,7 @@
   let hoverTimer = 0;
   const pointers = new Map();
   let pinchDistance = 0;
+    let pinchMidpoint = null;
   let pinching = false;
 
   const distance = (a, b) =>
