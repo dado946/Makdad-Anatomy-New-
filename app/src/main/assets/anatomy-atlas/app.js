@@ -844,7 +844,7 @@ drag.lastDy = dy;
     $('#hoverTip').hidden = true;
   });
 
-  function endPointer(e) {
+  function endPointer(e, allowInertia = true) {
     pointers.delete(e.pointerId);
     canvas.classList.remove('dragging');
 
