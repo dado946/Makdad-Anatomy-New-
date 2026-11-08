@@ -26,21 +26,14 @@ jobs:
           repository: CognitionLabSNUC/open-anatomy-atlas
           path: open-anatomy-atlas
 
-      - name: Download anatomy data
+      - name: Download complete anatomy data
         working-directory: open-anatomy-atlas
         run: |
           node tools/fetch-data.js \
             --source bp3d43 \
             --dir "$RUNNER_TEMP/atlas-data"
 
-      - name: Build bones-only atlas
-        working-directory: open-anatomy-atlas
-        run: |
-          node ../tools/build-bones.js \
-            "$RUNNER_TEMP/atlas-data/atlases/bp3d43/raw" \
-            "$RUNNER_TEMP/atlas-data/atlases/bp3d43/build"
-
-      - name: Prepare offline data
+      - name: Build offline atlas
         working-directory: open-anatomy-atlas
         run: |
           node tools/build-site.js \
@@ -49,18 +42,55 @@ jobs:
             --atlases bp3d43 \
             --default bp3d43
 
-      - name: Compress atlas
+      - name: Verify complete atlas
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+
+          const dir = path.join(process.env.RUNNER_TEMP, 'site/data/bp3d43');
+          const file = path.join(dir, 'index.json');
+
+          if (!fs.existsSync(file)) {
+            throw new Error('Atlas index is missing');
+          }
+
+          const index = JSON.parse(fs.readFileSync(file, 'utf8'));
+
+          if (!index.counts || !index.counts.elements || !index.counts.concepts) {
+            throw new Error('Atlas structure data is incomplete');
+          }
+
+          if (!Array.isArray(index.parts) || index.parts.length === 0) {
+            throw new Error('Atlas mesh parts are missing');
+          }
+
+          for (const part of index.parts) {
+            const partPath = path.join(dir, part.file);
+            if (!fs.existsSync(partPath)) {
+              throw new Error(`Missing mesh part: ${part.file}`);
+            }
+          }
+
+          console.log('Complete atlas verified');
+          console.log('Elements:', index.counts.elements);
+          console.log('Structures:', index.counts.concepts);
+          console.log('Mesh parts:', index.parts.length);
+          NODE
+
+      - name: Compress complete atlas
         run: |
           cd "$RUNNER_TEMP/site/data"
           zip -qr "$RUNNER_TEMP/atlas-bp3d43.zip" bp3d43
 
-      - name: Publish atlas package
+      - name: Publish complete anatomy package
         uses: softprops/action-gh-release@v2
         with:
           tag_name: atlas-data-bp3d43-v1
           name: Offline Anatomy Data
           body: |
-            BodyParts3D 4.3 bone-only anatomical data.
+            Complete BodyParts3D 4.3 anatomical atlas.
+            Includes all structures provided by the source atlas.
             Licensed under CC BY 4.0.
           files: ${{ runner.temp }}/atlas-bp3d43.zip
           overwrite_files: true
