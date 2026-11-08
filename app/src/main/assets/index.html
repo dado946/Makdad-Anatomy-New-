@@ -3,58 +3,577 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="theme-color" content="#091321">
+<meta name="theme-color" content="#091321" id="themeColor">
 <title>MAKDAD ANATOMY</title>
+
 <style>
-:root{--bg:#091321;--panel:#122238;--panel2:#1a3049;--gold:#e5bd68;--text:#f4f7fb;--muted:#a9b8c9;--line:#29445f}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#1a3450,var(--bg) 65%);color:var(--text);font-family:Arial,Tahoma,sans-serif;line-height:1.75}
-button,input{font:inherit}button{cursor:pointer}header{text-align:center;padding:26px 14px 16px;border-bottom:1px solid var(--line)}
-.logo{font-size:13px;letter-spacing:3px;color:var(--gold);font-weight:bold}.brand{font-size:28px;margin:3px 0}.subtitle{color:var(--muted);font-size:14px}
-nav{display:flex;gap:8px;overflow:auto;padding:12px;position:sticky;top:0;background:#091321ed;z-index:5;border-bottom:1px solid var(--line)}
-nav button,.btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:9px 14px;white-space:nowrap}
-nav button.active,.primary{background:var(--gold);color:#18202b;border-color:var(--gold);font-weight:bold}
-main{max-width:1050px;margin:auto;padding:18px 14px 60px}.hidden{display:none!important}
-.hero{padding:22px;border:1px solid #7e693e;background:linear-gradient(135deg,#26364a,#142238 60%,#302a1c);border-radius:22px;margin-bottom:18px}
-.hero h2{margin:0 0 8px;font-size:23px}.hero p{color:#c2ccda;margin:0 0 14px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
-.card{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:17px;padding:17px;min-height:128px;cursor:pointer;transition:.2s}
-.card:active{transform:scale(.985)}.card b{display:block;font-size:17px}.card span{display:block;color:var(--muted);font-size:13px}.emoji{font-size:29px;margin-bottom:6px}
-.atlas-3d{border:1px solid var(--gold);background:linear-gradient(135deg,#3b3424,#1a3049 70%);min-height:165px}
-.pill{display:inline-block!important;margin-top:9px;padding:2px 10px;border:1px solid #8b7547;border-radius:30px;color:var(--gold)!important;font-size:11px!important}
-.section-title{font-size:22px;margin:5px 0}.muted{color:var(--muted)}
-.search{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--text);margin:10px 0 15px}
-.detail,.box{background:var(--panel);border:1px solid var(--line);padding:17px;border-radius:16px;margin-top:14px}
-.detail h3{margin-top:0;color:var(--gold)}.detail p{margin:7px 0}
-.item{padding:10px 4px;border-bottom:1px solid var(--line)}.item:last-child{border:0}
-.answer{display:block;width:100%;text-align:right;padding:12px;margin:8px 0;border:1px solid var(--line);border-radius:12px;background:var(--panel2);color:var(--text)}
-.answer.correct{border-color:#55b987;background:#183d36}.answer.wrong{border-color:#d47777;background:#432727}
-footer{text-align:center;color:var(--muted);font-size:12px;padding:24px}
+:root{
+--bg:#091321;
+--panel:#122238;
+--panel2:#1a3049;
+--gold:#e5bd68;
+--text:#f4f7fb;
+--muted:#a9b8c9;
+--line:#29445f;
+--nav:#091321ed;
+--hero1:#26364a;
+--hero2:#142238;
+--hero3:#302a1c;
+--atlas1:#3b3424;
+}
+
+*{box-sizing:border-box}
+
+body{
+margin:0;
+background:radial-gradient(ellipse at top,var(--panel2),var(--bg) 65%);
+color:var(--text);
+font-family:Arial,Tahoma,sans-serif;
+line-height:1.75;
+}
+
+button,input{font:inherit}
+button{cursor:pointer}
+
+header{
+text-align:center;
+padding:26px 14px 16px;
+border-bottom:1px solid var(--line);
+position:relative;
+}
+
+.logo{
+font-size:13px;
+letter-spacing:3px;
+color:var(--gold);
+font-weight:bold
+}
+
+.brand{font-size:28px;margin:3px 0}
+.subtitle{color:var(--muted);font-size:14px}
+
+.menu-trigger{
+position:absolute;
+right:14px;
+top:14px;
+width:44px;
+height:44px;
+border:1px solid var(--line);
+border-radius:13px;
+background:var(--panel);
+color:var(--text);
+font-size:23px;
+}
+
+nav{
+display:flex;
+gap:8px;
+overflow:auto;
+padding:12px;
+position:sticky;
+top:0;
+background:var(--nav);
+z-index:5;
+border-bottom:1px solid var(--line)
+}
+
+nav button,.btn{
+border:1px solid var(--line);
+background:var(--panel);
+color:var(--text);
+border-radius:12px;
+padding:9px 14px;
+white-space:nowrap
+}
+
+nav button.active,.primary{
+background:var(--gold);
+color:#18202b;
+border-color:var(--gold);
+font-weight:bold
+}
+
+main{
+max-width:1050px;
+margin:auto;
+padding:18px 14px 60px
+}
+
+.hidden{display:none!important}
+
+.hero{
+padding:22px;
+border:1px solid var(--gold);
+background:linear-gradient(135deg,var(--hero1),var(--hero2) 60%,var(--hero3));
+border-radius:22px;
+margin-bottom:18px
+}
+
+.hero h2{margin:0 0 8px;font-size:23px}
+.hero p{color:var(--muted);margin:0 0 14px}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+gap:12px
+}
+
+.card{
+background:linear-gradient(145deg,var(--panel2),var(--panel));
+border:1px solid var(--line);
+border-radius:17px;
+padding:17px;
+min-height:128px;
+cursor:pointer;
+transition:.2s
+}
+
+.card:active{transform:scale(.985)}
+.card b{display:block;font-size:17px}
+.card span{display:block;color:var(--muted);font-size:13px}
+.emoji{font-size:29px;margin-bottom:6px}
+
+.atlas-3d{
+border:1px solid var(--gold);
+background:linear-gradient(135deg,var(--atlas1),var(--panel2) 70%);
+min-height:165px
+}
+
+.pill{
+display:inline-block!important;
+margin-top:9px;
+padding:2px 10px;
+border:1px solid var(--gold);
+border-radius:30px;
+color:var(--gold)!important;
+font-size:11px!important
+}
+
+.section-title{font-size:22px;margin:5px 0}
+.muted{color:var(--muted)}
+
+.search{
+width:100%;
+padding:13px 14px;
+border:1px solid var(--line);
+border-radius:12px;
+background:var(--panel);
+color:var(--text);
+margin:10px 0 15px
+}
+
+.detail,.box{
+background:var(--panel);
+border:1px solid var(--line);
+padding:17px;
+border-radius:16px;
+margin-top:14px
+}
+
+.detail h3{margin-top:0;color:var(--gold)}
+.detail p{margin:7px 0}
+
+.item{
+padding:10px 4px;
+border-bottom:1px solid var(--line)
+}
+
+.item:last-child{border:0}
+
+.answer{
+display:block;
+width:100%;
+text-align:right;
+padding:12px;
+margin:8px 0;
+border:1px solid var(--line);
+border-radius:12px;
+background:var(--panel2);
+color:var(--text)
+}
+
+.answer.correct{border-color:#55b987;background:#183d36}
+.answer.wrong{border-color:#d47777;background:#432727}
+
+footer{
+text-align:center;
+color:var(--muted);
+font-size:12px;
+padding:24px
+}
+
 a{color:var(--gold)}
-@media(min-width:700px){main{padding-top:26px}.hero{padding:30px}.brand{font-size:34px}}
+
+/* القائمة الجانبية */
+
+.drawer-backdrop{
+position:fixed;
+inset:0;
+background:#0009;
+z-index:20;
+opacity:0;
+visibility:hidden;
+transition:.25s
+}
+
+.settings-drawer{
+position:fixed;
+z-index:21;
+top:0;
+right:0;
+width:min(330px,86vw);
+height:100vh;
+height:100dvh;
+padding:22px 18px;
+background:var(--panel);
+border-left:1px solid var(--line);
+box-shadow:-12px 0 35px #0005;
+transform:translateX(105%);
+transition:transform .25s ease;
+overflow-y:auto
+}
+
+body.drawer-open .drawer-backdrop{
+opacity:1;
+visibility:visible
+}
+
+body.drawer-open .settings-drawer{
+transform:translateX(0)
+}
+
+.drawer-head{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:12px
+}
+
+.drawer-head h2{
+font-size:20px;
+margin:5px 0
+}
+
+.drawer-close{
+width:40px;
+height:40px;
+border:1px solid var(--line);
+border-radius:11px;
+background:var(--panel2);
+color:var(--text);
+font-size:25px
+}
+
+.theme-list{
+display:grid;
+gap:10px;
+margin-top:18px
+}
+
+.theme-option{
+display:flex;
+align-items:center;
+gap:11px;
+width:100%;
+padding:12px;
+border:1px solid var(--line);
+border-radius:13px;
+background:var(--panel2);
+color:var(--text);
+text-align:right
+}
+
+.swatch{
+width:23px;
+height:23px;
+flex:0 0 23px;
+border-radius:50%;
+background:var(--swatch);
+border:2px solid #ffffff66
+}
+
+.theme-check{
+margin-right:auto;
+color:var(--gold);
+opacity:0
+}
+
+.theme-option.selected{
+border-color:var(--gold)
+}
+
+.theme-option.selected .theme-check{
+opacity:1
+}
+
+.drawer-note{
+margin-top:20px;
+color:var(--muted);
+font-size:12px
+}
+
+@media(min-width:700px){
+main{padding-top:26px}
+.hero{padding:30px}
+.brand{font-size:34px}
+.menu-trigger{right:20px;top:18px}
+}
 </style>
 </head>
-<body>
-<header><div class="logo">MEDICAL LEARNING PLATFORM</div><h1 class="brand">MAKDAD ANATOMY</h1><div class="subtitle">منصتك التفاعلية لدراسة التشريح البشري</div></header>
-<nav id="nav">
-<button class="active" data-tab="home">الرئيسية</button><button data-tab="systems">أجهزة الجسم</button><button data-tab="atlas">الأطلس</button><button data-tab="terms">القاموس الطبي</button><button data-tab="quiz">اختبر نفسك</button>
-</nav>
-<main>
-<section id="home">
-<div class="hero"><h2>مرحباً بك في عالم التشريح</h2><p>استكشف أجهزة جسم الإنسان، تعرّف إلى المصطلحات الطبية، وادرس البنى التشريحية باستخدام الأطلس التفاعلي ثلاثي الأبعاد.</p><button class="btn primary" onclick="openAtlas()">ابدأ دراسة التشريح ثلاثي الأبعاد</button></div>
-<div class="grid">
-<div class="card atlas-3d" onclick="openAtlas()"><div class="emoji">🦴</div><b>الأطلس التشريحي ثلاثي الأبعاد</b><span>هيكل عظمي وعضلات قابلة للاستكشاف والدوران والتكبير</span><span class="pill">3D INTERACTIVE</span></div>
-<div class="card" onclick="tab('systems')"><div class="emoji">🫀</div><b>أجهزة الجسم</b><span>تعرف على أجهزة الإنسان ووظائفها وأهم أجزائها</span></div>
-<div class="card" onclick="tab('atlas')"><div class="emoji">🧠</div><b>الأطلس التشريحي</b><span>مناطق الجسم والبنى التشريحية الأساسية</span></div>
-<div class="card" onclick="tab('terms')"><div class="emoji">📖</div><b>القاموس الطبي</b><span>مصطلحات عربية وإنجليزية</span></div>
-<div class="card" onclick="tab('quiz')"><div class="emoji">🎓</div><b>اختبر نفسك</b><span>أسئلة تعليمية مع تصحيح فوري</span></div>
-</div></section>
 
-<section id="systems" class="hidden"><h2 class="section-title">أجهزة جسم الإنسان</h2><p class="muted">اختر جهازاً لعرض وظيفته ومكوناته الرئيسية.</p><input class="search" id="systemSearch" placeholder="ابحث عن جهاز..."><div class="grid" id="systemCards"></div><div class="detail hidden" id="systemDetail"></div></section>
-<section id="atlas" class="hidden"><h2 class="section-title">الأطلس التشريحي</h2><p class="muted">اختر منطقة تشريحية لعرض ملخص تعليمي.</p><input class="search" id="regionSearch" placeholder="ابحث عن منطقة..."><div class="grid" id="regionCards"></div><div class="detail hidden" id="regionDetail"></div><div class="box"><b>المجسم ثلاثي الأبعاد</b><p class="muted">للدراسة التفاعلية التفصيلية افتح عارض الهيكل العظمي والعضلات.</p><button class="btn primary" onclick="openAtlas()">فتح الأطلس ثلاثي الأبعاد</button></div></section>
-<section id="terms" class="hidden"><h2 class="section-title">القاموس الطبي</h2><p class="muted">ابحث بالعربية أو الإنجليزية.</p><input class="search" id="termSearch" placeholder="اكتب المصطلح..."><div class="box" id="termsList"></div></section>
-<section id="quiz" class="hidden"><h2 class="section-title">اختبر معلوماتك</h2><div class="box"><div id="question"></div><div id="answers"></div><p id="feedback" aria-live="polite"></p><button class="btn primary" id="next">السؤال التالي</button><p class="muted" id="score"></p></div></section>
-</main><footer>MAKDAD ANATOMY · محتوى تعليمي لدراسة التشريح</footer>
+<body>
+
+<header>
+<button class="menu-trigger" id="openSettings" aria-label="فتح قائمة الإعدادات">☰</button>
+<div class="logo">MEDICAL LEARNING PLATFORM</div>
+<h1 class="brand">MAKDAD ANATOMY</h1>
+<div class="subtitle">منصتك التفاعلية لدراسة التشريح البشري</div>
+</header>
+
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+<aside class="settings-drawer" id="settingsDrawer" aria-hidden="true">
+<div class="drawer-head">
+<h2>إعدادات المظهر</h2>
+<button class="drawer-close" id="closeSettings" aria-label="إغلاق">×</button>
+</div>
+
+<p class="muted">اختر لون واجهة التطبيق</p>
+
+<div class="theme-list" id="themeList">
+
+<button class="theme-option" data-theme="classic">
+<span class="swatch" style="--swatch:#e5bd68"></span>
+<span>ذهبي كلاسيكي</span>
+<span class="theme-check">✓</span>
+</button>
+
+<button class="theme-option" data-theme="ocean">
+<span class="swatch" style="--swatch:#55c7df"></span>
+<span>أزرق محيطي</span>
+<span class="theme-check">✓</span>
+</button>
+
+<button class="theme-option" data-theme="emerald">
+<span class="swatch" style="--swatch:#55c99a"></span>
+<span>أخضر زمردي</span>
+<span class="theme-check">✓</span>
+</button>
+
+<button class="theme-option" data-theme="violet">
+<span class="swatch" style="--swatch:#b99aff"></span>
+<span>بنفسجي</span>
+<span class="theme-check">✓</span>
+</button>
+
+<button class="theme-option" data-theme="rose">
+<span class="swatch" style="--swatch:#f08eaa"></span>
+<span>وردي هادئ</span>
+<span class="theme-check">✓</span>
+</button>
+
+</div>
+
+<p class="drawer-note">
+سيتم حفظ اللون المختار تلقائياً على جهازك.
+</p>
+</aside>
+
+<nav id="nav">
+<button class="active" data-tab="home">الرئيسية</button>
+<button data-tab="systems">أجهزة الجسم</button>
+<button data-tab="atlas">الأطلس</button>
+<button data-tab="terms">القاموس الطبي</button>
+<button data-tab="quiz">اختبر نفسك</button>
+</nav>
+
+<main>
+
+<section id="home">
+
+<div class="hero">
+<h2>مرحباً بك في عالم التشريح</h2>
+<p>استكشف أجهزة جسم الإنسان، تعرّف إلى المصطلحات الطبية، وادرس البنى التشريحية باستخدام الأطلس التفاعلي ثلاثي الأبعاد.</p>
+<button class="btn primary" onclick="openAtlas()">ابدأ دراسة التشريح ثلاثي الأبعاد</button>
+</div>
+
+<div class="grid">
+
+<div class="card atlas-3d" onclick="openAtlas()">
+<div class="emoji">🦴</div>
+<b>الأطلس التشريحي ثلاثي الأبعاد</b>
+<span>هيكل عظمي وعضلات قابلة للاستكشاف والدوران والتكبير</span>
+<span class="pill">3D INTERACTIVE</span>
+</div>
+
+<div class="card" onclick="tab('systems')">
+<div class="emoji">🫀</div>
+<b>أجهزة الجسم</b>
+<span>تعرف على أجهزة الإنسان ووظائفها وأهم أجزائها</span>
+</div>
+
+<div class="card" onclick="tab('atlas')">
+<div class="emoji">🧠</div>
+<b>الأطلس التشريحي</b>
+<span>مناطق الجسم والبنى التشريحية الأساسية</span>
+</div>
+
+<div class="card" onclick="tab('terms')">
+<div class="emoji">📖</div>
+<b>القاموس الطبي</b>
+<span>مصطلحات عربية وإنجليزية</span>
+</div>
+
+<div class="card" onclick="tab('quiz')">
+<div class="emoji">🎓</div>
+<b>اختبر نفسك</b>
+<span>أسئلة تعليمية مع تصحيح فوري</span>
+</div>
+
+</div>
+</section>
+
+<section id="systems" class="hidden">
+<h2 class="section-title">أجهزة جسم الإنسان</h2>
+<p class="muted">اختر جهازاً لعرض وظيفته ومكوناته الرئيسية.</p>
+<input class="search" id="systemSearch" placeholder="ابحث عن جهاز...">
+<div class="grid" id="systemCards"></div>
+<div class="detail hidden" id="systemDetail"></div>
+</section>
+
+<section id="atlas" class="hidden">
+<h2 class="section-title">الأطلس التشريحي</h2>
+<p class="muted">اختر منطقة تشريحية لعرض ملخص تعليمي.</p>
+<input class="search" id="regionSearch" placeholder="ابحث عن منطقة...">
+<div class="grid" id="regionCards"></div>
+<div class="detail hidden" id="regionDetail"></div>
+<div class="box">
+<b>المجسم ثلاثي الأبعاد</b>
+<p class="muted">للدراسة التفاعلية التفصيلية افتح عارض الهيكل العظمي والعضلات.</p>
+<button class="btn primary" onclick="openAtlas()">فتح الأطلس ثلاثي الأبعاد</button>
+</div>
+</section>
+
+<section id="terms" class="hidden">
+<h2 class="section-title">القاموس الطبي</h2>
+<p class="muted">ابحث بالعربية أو الإنجليزية.</p>
+<input class="search" id="termSearch" placeholder="اكتب المصطلح...">
+<div class="box" id="termsList"></div>
+</section>
+
+<section id="quiz" class="hidden">
+<h2 class="section-title">اختبر معلوماتك</h2>
+<div class="box">
+<div id="question"></div>
+<div id="answers"></div>
+<p id="feedback" aria-live="polite"></p>
+<button class="btn primary" id="next">السؤال التالي</button>
+<p class="muted" id="score"></p>
+</div>
+</section>
+
+</main>
+
+<footer>MAKDAD ANATOMY · محتوى تعليمي لدراسة التشريح</footer>
+
 <script>
+
+/* نظام الألوان وحفظ الاختيار */
+
+const themes={
+classic:{
+gold:"#e5bd68",panel:"#122238",panel2:"#1a3049",
+bg:"#091321",line:"#29445f",nav:"#091321ed",
+hero1:"#26364a",hero2:"#142238",hero3:"#302a1c",
+atlas1:"#3b3424"
+},
+ocean:{
+gold:"#55c7df",panel:"#102b3b",panel2:"#174258",
+bg:"#071923",line:"#286078",nav:"#071923ed",
+hero1:"#17465b",hero2:"#102b3b",hero3:"#153c50",
+atlas1:"#15516a"
+},
+emerald:{
+gold:"#55c99a",panel:"#122d2a",panel2:"#1a4038",
+bg:"#091a18",line:"#2b6254",nav:"#091a18ed",
+hero1:"#24483e",hero2:"#122d2a",hero3:"#1b3c32",
+atlas1:"#245344"
+},
+violet:{
+gold:"#b99aff",panel:"#28213d",panel2:"#392d55",
+bg:"#151020",line:"#554477",nav:"#151020ed",
+hero1:"#40345d",hero2:"#28213d",hero3:"#332748",
+atlas1:"#4b3c68"
+},
+rose:{
+gold:"#f08eaa",panel:"#382330",panel2:"#503044",
+bg:"#1e121a",line:"#704258",nav:"#1e121aed",
+hero1:"#5b3548",hero2:"#382330",hero3:"#4b2b3d",
+atlas1:"#693c52"
+}
+};
+
+function applyTheme(name){
+const theme=themes[name]||themes.classic;
+const root=document.documentElement;
+
+Object.entries(theme).forEach(([key,value])=>{
+root.style.setProperty("--"+key,value);
+});
+
+document.querySelectorAll(".theme-option").forEach(button=>{
+button.classList.toggle("selected",button.dataset.theme===name);
+});
+
+document.getElementById("themeColor").setAttribute("content",theme.bg);
+
+try{
+localStorage.setItem("makdad-anatomy-theme",name);
+}catch(error){
+console.warn("تعذر حفظ اللون",error);
+}
+}
+
+let savedTheme="classic";
+
+try{
+savedTheme=localStorage.getItem("makdad-anatomy-theme")||"classic";
+}catch(error){}
+
+applyTheme(savedTheme);
+
+
+/* القائمة الجانبية */
+
+function closeSettings(){
+document.body.classList.remove("drawer-open");
+document.getElementById("settingsDrawer").setAttribute("aria-hidden","true");
+}
+
+document.getElementById("openSettings").addEventListener("click",()=>{
+document.body.classList.add("drawer-open");
+document.getElementById("settingsDrawer").setAttribute("aria-hidden","false");
+});
+
+document.getElementById("closeSettings").addEventListener("click",closeSettings);
+document.getElementById("drawerBackdrop").addEventListener("click",closeSettings);
+
+document.getElementById("themeList").addEventListener("click",event=>{
+const button=event.target.closest("[data-theme]");
+if(button){
+applyTheme(button.dataset.theme);
+}
+});
+
+document.addEventListener("keydown",event=>{
+if(event.key==="Escape"){
+closeSettings();
+}
+});
+
+
+/* بيانات أجهزة الجسم */
+
 const systems=[
 {icon:"🦴",ar:"الجهاز الهيكلي",en:"Skeletal System",desc:"يدعم الجسم ويحمي الأعضاء ويساهم في الحركة وتكوين خلايا الدم وتخزين المعادن.",parts:"الجمجمة، العمود الفقري، القفص الصدري، الحزام الكتفي، الأطراف العلوية، الحوض، الأطراف السفلية."},
 {icon:"💪",ar:"الجهاز العضلي",en:"Muscular System",desc:"يساهم في حركة الجسم والمحافظة على الوضعية وإنتاج الحرارة.",parts:"العضلات الهيكلية، العضلات الملساء، العضلة القلبية."},
@@ -67,6 +586,7 @@ const systems=[
 {icon:"🛡️",ar:"الجهاز اللمفاوي والمناعي",en:"Lymphatic & Immune System",desc:"يساهم في إعادة السوائل إلى الدم والدفاع المناعي.",parts:"الأوعية والعقد اللمفاوية، الطحال، الغدة الزعترية، اللوزتان."},
 {icon:"🧴",ar:"الجهاز اللحافي",en:"Integumentary System",desc:"يشكل حاجزاً واقياً ويساهم في تنظيم الحرارة والإحساس.",parts:"الجلد، الشعر، الأظافر، الغدد العرقية والدهنية."}
 ];
+
 const regions=[
 ["الجمجمة","Skull","تتكون من عظام القحف وعظام الوجه، وتحمي الدماغ وتدعم تراكيب الوجه."],
 ["العمود الفقري","Vertebral column","يتكون عادة من 7 فقرات رقبية و12 صدرية و5 قطنية، إضافة إلى العجز والعصعص."],
@@ -75,22 +595,195 @@ const regions=[
 ["الحوض","Pelvis","يتكون من عظمي الورك والعجز والعصعص، وينقل وزن الجذع إلى الطرفين السفليين."],
 ["الطرف السفلي","Lower limb","يشمل الفخذ والساق والقدم، ويؤدي دوراً أساسياً في الوقوف والحركة."]
 ];
+
 const terms=[
 ["عظم","Bone","Os"],["عضلة","Muscle","Musculus"],["عصب","Nerve","Nervus"],["شريان","Artery","Arteria"],["وريد","Vein","Vena"],["مفصل","Joint","Articulatio"],["غضروف","Cartilage","Cartilago"],["وتر","Tendon","Tendo"],["رباط","Ligament","Ligamentum"],["جمجمة","Skull","Cranium"],["لوح الكتف","Scapula","Scapula"],["عظم الفخذ","Femur","Femur"],["القص","Sternum","Sternum"],["الفقرة","Vertebra","Vertebra"]
 ];
-function tab(id){document.querySelectorAll("main section").forEach(s=>s.classList.add("hidden"));document.getElementById(id).classList.remove("hidden");document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.tab===id));window.scrollTo(0,0)}
-function openAtlas(){location.href="anatomy-atlas/index.html"}
-document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>tab(b.dataset.tab)));
-function renderSystems(q=""){const root=document.getElementById("systemCards");root.innerHTML="";systems.filter(x=>(x.ar+x.en).toLowerCase().includes(q.toLowerCase())).forEach(x=>{const c=document.createElement("div");c.className="card";c.innerHTML=`<div class="emoji">${x.icon}</div><b>${x.ar}</b><span>${x.en}</span>`;c.onclick=()=>{const d=document.getElementById("systemDetail");d.classList.remove("hidden");d.innerHTML=`<h3>${x.ar} · ${x.en}</h3><p>${x.desc}</p><p><b>المكونات الرئيسية:</b> ${x.parts}</p>`};root.append(c)})}
-function renderRegions(q=""){const root=document.getElementById("regionCards");root.innerHTML="";regions.filter(x=>(x[0]+x[1]).toLowerCase().includes(q.toLowerCase())).forEach(x=>{const c=document.createElement("div");c.className="card";c.innerHTML=`<b>${x[0]}</b><span>${x[1]}</span>`;c.onclick=()=>{const d=document.getElementById("regionDetail");d.classList.remove("hidden");d.innerHTML=`<h3>${x[0]} · ${x[1]}</h3><p>${x[2]}</p>`};root.append(c)})}
-function renderTerms(q=""){document.getElementById("termsList").innerHTML=terms.filter(x=>x.join(" ").toLowerCase().includes(q.toLowerCase())).map(x=>`<div class="item"><b>${x[0]}</b> — ${x[1]} <span class="muted">(${x[2]})</span></div>`).join("")}
-document.getElementById("systemSearch").addEventListener("input",e=>renderSystems(e.target.value));document.getElementById("regionSearch").addEventListener("input",e=>renderRegions(e.target.value));document.getElementById("termSearch").addEventListener("input",e=>renderTerms(e.target.value));
-const questions=[{q:"أي جزء يحمي الدماغ؟",a:["الجمجمة","عظم الفخذ","القص"],c:0,e:"الجمجمة تحيط بالدماغ وتحميه."},{q:"كم عدد الفقرات الصدرية عادة؟",a:["5","12","7"],c:1,e:"توجد 12 فقرة صدرية."},{q:"ما الوحدة الوظيفية الأساسية للجهاز العصبي؟",a:["الخلية العضلية","العصبون","الكُبيبة"],c:1,e:"العصبون هو الوحدة الوظيفية الأساسية للجهاز العصبي."}];
+
+
+/* التنقل بين الأقسام */
+
+function tab(id){
+document.querySelectorAll("main section").forEach(section=>{
+section.classList.add("hidden");
+});
+
+document.getElementById(id).classList.remove("hidden");
+
+document.querySelectorAll("nav button").forEach(button=>{
+button.classList.toggle("active",button.dataset.tab===id);
+});
+
+window.scrollTo(0,0);
+}
+
+function openAtlas(){
+location.href="anatomy-atlas/index.html";
+}
+
+document.querySelectorAll("nav button").forEach(button=>{
+button.addEventListener("click",()=>tab(button.dataset.tab));
+});
+
+
+/* عرض أجهزة الجسم */
+
+function renderSystems(q=""){
+const root=document.getElementById("systemCards");
+root.innerHTML="";
+
+systems.filter(x=>(x.ar+x.en).toLowerCase().includes(q.toLowerCase())).forEach(x=>{
+const c=document.createElement("div");
+c.className="card";
+
+c.innerHTML=`<div class="emoji">${x.icon}</div><b>${x.ar}</b><span>${x.en}</span>`;
+
+c.onclick=()=>{
+const d=document.getElementById("systemDetail");
+d.classList.remove("hidden");
+d.innerHTML=`<h3>${x.ar} · ${x.en}</h3><p>${x.desc}</p><p><b>المكونات الرئيسية:</b> ${x.parts}</p>`;
+};
+
+root.append(c);
+});
+}
+
+
+/* عرض المناطق التشريحية */
+
+function renderRegions(q=""){
+const root=document.getElementById("regionCards");
+root.innerHTML="";
+
+regions.filter(x=>(x[0]+x[1]).toLowerCase().includes(q.toLowerCase())).forEach(x=>{
+const c=document.createElement("div");
+c.className="card";
+
+c.innerHTML=`<b>${x[0]}</b><span>${x[1]}</span>`;
+
+c.onclick=()=>{
+const d=document.getElementById("regionDetail");
+d.classList.remove("hidden");
+d.innerHTML=`<h3>${x[0]} · ${x[1]}</h3><p>${x[2]}</p>`;
+};
+
+root.append(c);
+});
+}
+
+
+/* القاموس الطبي */
+
+function renderTerms(q=""){
+document.getElementById("termsList").innerHTML=
+terms.filter(x=>x.join(" ").toLowerCase().includes(q.toLowerCase()))
+.map(x=>`<div class="item"><b>${x[0]}</b> — ${x[1]} <span class="muted">(${x[2]})</span></div>`)
+.join("");
+}
+
+document.getElementById("systemSearch").addEventListener("input",e=>renderSystems(e.target.value));
+document.getElementById("regionSearch").addEventListener("input",e=>renderRegions(e.target.value));
+document.getElementById("termSearch").addEventListener("input",e=>renderTerms(e.target.value));
+
+
+/* الاختبار */
+
+const questions=[
+{q:"أي جزء يحمي الدماغ؟",a:["الجمجمة","عظم الفخذ","القص"],c:0,e:"الجمجمة تحيط بالدماغ وتحميه."},
+{q:"كم عدد الفقرات الصدرية عادة؟",a:["5","12","7"],c:1,e:"توجد 12 فقرة صدرية."},
+{q:"ما الوحدة الوظيفية الأساسية للجهاز العصبي؟",a:["الخلية العضلية","العصبون","الكُبيبة"],c:1,e:"العصبون هو الوحدة الوظيفية الأساسية للجهاز العصبي."}
+];
+
 let qi=0,score=0,answered=false;
-function showQuestion(){answered=false;const q=questions[qi];document.getElementById("question").innerHTML=`<b>السؤال ${qi+1} من ${questions.length}</b><p>${q.q}</p>`;document.getElementById("answers").innerHTML="";q.a.forEach((a,i)=>{const b=document.createElement("button");b.className="answer";b.textContent=a;b.onclick=()=>choose(i,b);document.getElementById("answers").append(b)});document.getElementById("feedback").textContent="";document.getElementById("score").textContent=`النتيجة: ${score} / ${questions.length}`}
-function choose(i,b){if(answered)return;answered=true;const q=questions[qi];if(i===q.c){score++;b.classList.add("correct");document.getElementById("feedback").textContent="إجابة صحيحة! "+q.e}else{b.classList.add("wrong");document.getElementById("answers").children[q.c].classList.add("correct");document.getElementById("feedback").textContent="ليست الإجابة الصحيحة. "+q.e}document.getElementById("score").textContent=`النتيجة: ${score} / ${questions.length}`}
-document.getElementById("next").onclick=()=>{qi++;if(qi>=questions.length){document.getElementById("question").innerHTML=`انتهى الاختبار. نتيجتك ${score} من ${questions.length}.`;document.getElementById("answers").innerHTML="";document.getElementById("feedback").textContent="اضغط إعادة الاختبار للمحاولة من جديد.";return}showQuestion()};
-document.getElementById("restart")?.addEventListener("click",()=>{qi=0;score=0;showQuestion()});
-renderSystems();renderRegions();renderTerms();showQuestion();
+
+function showQuestion(){
+answered=false;
+
+const q=questions[qi];
+
+document.getElementById("question").innerHTML=
+`<b>السؤال ${qi+1} من ${questions.length}</b><p>${q.q}</p>`;
+
+document.getElementById("answers").innerHTML="";
+
+q.a.forEach((a,i)=>{
+const b=document.createElement("button");
+b.className="answer";
+b.textContent=a;
+b.onclick=()=>choose(i,b);
+document.getElementById("answers").append(b);
+});
+
+document.getElementById("feedback").textContent="";
+document.getElementById("score").textContent=`النتيجة: ${score} / ${questions.length}`;
+}
+
+function choose(i,b){
+if(answered)return;
+
+answered=true;
+const q=questions[qi];
+
+if(i===q.c){
+score++;
+b.classList.add("correct");
+document.getElementById("feedback").textContent="إجابة صحيحة! "+q.e;
+}else{
+b.classList.add("wrong");
+document.getElementById("answers").children[q.c].classList.add("correct");
+document.getElementById("feedback").textContent="ليست الإجابة الصحيحة. "+q.e;
+}
+
+document.getElementById("score").textContent=`النتيجة: ${score} / ${questions.length}`;
+}
+
+document.getElementById("next").onclick=()=>{
+qi++;
+
+if(qi>=questions.length){
+document.getElementById("question").innerHTML=
+`انتهى الاختبار. نتيجتك ${score} من ${questions.length}.`;
+
+document.getElementById("answers").innerHTML="";
+document.getElementById("feedback").textContent="انتهى الاختبار.";
+document.getElementById("next").textContent="إعادة الاختبار";
+
+document.getElementById("next").onclick=()=>{
+qi=0;
+score=0;
+document.getElementById("next").textContent="السؤال التالي";
+document.getElementById("next").onclick=nextQuestion;
+showQuestion();
+};
+
+return;
+}
+
+showQuestion();
+};
+
+function nextQuestion(){
+qi++;
+
+if(qi>=questions.length){
+document.getElementById("question").innerHTML=
+`انتهى الاختبار. نتيجتك ${score} من ${questions.length}.`;
+document.getElementById("answers").innerHTML="";
+document.getElementById("feedback").textContent="انتهى الاختبار.";
+return;
+}
+
+showQuestion();
+}
+
+
+/* تشغيل التطبيق */
+
+renderSystems();
+renderRegions();
+renderTerms();
+showQuestion();
+
 </script>
-</body></html>
+</body>
+</html>
