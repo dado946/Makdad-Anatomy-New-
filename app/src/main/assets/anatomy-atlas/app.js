@@ -867,7 +867,7 @@ drag = null;
   }
 
   canvas.addEventListener('pointercancel', e => {
-    endPointer(e);
+    endPointer(e, false);
     clearTimeout(hoverTimer);
     $('#hoverTip').hidden = true;
   });
