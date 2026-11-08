@@ -1082,5 +1082,11 @@ sidebarBtn.addEventListener('click', () => {
     }
   }
 
+    window.addEventListener('pagehide', () => {
+    if (renderer && typeof renderer.dispose === 'function') {
+      renderer.dispose();
+    }
+  });
+
   boot();
 })();
