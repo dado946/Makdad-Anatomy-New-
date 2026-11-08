@@ -56,7 +56,6 @@ private boolean exitPending = false;
 
 private final Handler backHandler =
     new Handler(Looper.getMainLooper());
-    @Override
    @Override
 protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -76,14 +75,6 @@ protected void onCreate(Bundle savedInstanceState) {
     }
 }
 
-private boolean hasAtlasIndex() {
-    File installed = new File(
-        getFilesDir(),
-        "atlas-data/bp3d43/index.json"
-    );
-
-    return installed.isFile() && installed.length() > 0;
-} 
     private boolean hasAtlasIndex() {
     File installed = new File(
         getFilesDir(),
