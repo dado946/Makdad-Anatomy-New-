@@ -449,13 +449,129 @@ requestRender() {
   }
 
   // Returns the element index under the given client coordinates, or -1.
+  
+  // Returns the element index under the given client coordinates, or -1.
   pick(clientX, clientY) {
     const gl = this.gl;
     if (!this.n) return -1;
 
     this._resize();
+
     const W = this.canvas.width;
     const H = this.canvas.height;
+
+    const rect = this.canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return -1;
+
+    const x = Math.floor((clientX - rect.left) * W / rect.width);
+    const y = Math.floor((rect.bottom - clientY) * H / rect.height);
+
+    if (x < 0 || y < 0 || x >= W || y >= H) return -1;
+
+    const { vp, eye } = this._matrices();
+    const invVP = mat4.invert(mat4.create(), vp);
+
+    const anySel = this.selected.some(Boolean);
+    const candidates = [];
+
+    // تحويل نقطة من إحداثيات الشاشة إلى إحداثيات العالم.
+    const unproject = (z) => {
+      const nx = ((x + 0.5) / W) * 2 - 1;
+      const ny = ((y + 0.5) / H) * 2 - 1;
+
+      const px =
+        invVP[0] * nx + invVP[4] * ny +
+        invVP[8] * z + invVP[12];
+
+      const py =
+        invVP[1] * nx + invVP[5] * ny +
+        invVP[9] * z + invVP[13];
+
+      const pz =
+        invVP[2] * nx + invVP[6] * ny +
+        invVP[10] * z + invVP[14];
+
+      const pw =
+        invVP[3] * nx + invVP[7] * ny +
+        invVP[11] * z + invVP[15];
+
+      if (!Number.isFinite(pw) || Math.abs(pw) < 1e-10) {
+        return null;
+      }
+
+      return [px / pw, py / pw, pz / pw];
+    };
+
+    // اختبار تقاطع قطعة الشعاع مع صندوق المجسم.
+    const intersectsBox = (a, b, box) => {
+      let tMin = 0;
+      let tMax = 1;
+
+      for (let axis = 0; axis < 3; axis++) {
+        const d = b[axis] - a[axis];
+
+        if (Math.abs(d) < 1e-10) {
+          if (
+            a[axis] < box[axis] ||
+            a[axis] > box[axis + 3]
+          ) return false;
+
+          continue;
+        }
+
+        let t1 = (box[axis] - a[axis]) / d;
+        let t2 = (box[axis + 3] - a[axis]) / d;
+
+        if (t1 > t2) {
+          const temp = t1;
+          t1 = t2;
+          t2 = temp;
+        }
+
+        tMin = Math.max(tMin, t1);
+        tMax = Math.min(tMax, t2);
+
+        if (tMin > tMax) return false;
+      }
+
+      return true;
+    };
+
+    // اختيار المرشحين باستخدام الحدود المكانية.
+    if (invVP) {
+      const near = unproject(-1);
+      const far = unproject(1);
+
+      if (near && far) {
+        for (let i = 0; i < this.n; i++) {
+          if (!this.visible[i]) continue;
+          if (this.xray && anySel && !this.selected[i]) continue;
+
+          const box = this.elements[i].b;
+
+          // الاحتفاظ بالمجسم إذا كانت حدوده غير متاحة.
+          if (
+            !box ||
+            box.length < 6 ||
+            !box.every(Number.isFinite) ||
+            intersectsBox(near, far, box)
+          ) {
+            candidates.push(i);
+          }
+        }
+      }
+    }
+
+    // الرجوع إلى الفحص الكامل إذا تعذر إنشاء الشعاع.
+    if (!invVP || candidates.length === 0) {
+      if (!invVP) {
+        for (let i = 0; i < this.n; i++) {
+          if (!this.visible[i]) continue;
+          if (this.xray && anySel && !this.selected[i]) continue;
+          candidates.push(i);
+        }
+      }
+    }
 
     if (!this._fbo || this._fboSize !== W + 'x' + H) {
       if (this._fbo) {
@@ -466,6 +582,7 @@ requestRender() {
 
       this._fbo = gl.createFramebuffer();
       this._rbC = gl.createRenderbuffer();
+
       gl.bindRenderbuffer(gl.RENDERBUFFER, this._rbC);
       gl.renderbufferStorage(gl.RENDERBUFFER, gl.RGBA8, W, H);
 
@@ -474,45 +591,54 @@ requestRender() {
       gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT24, W, H);
 
       gl.bindFramebuffer(gl.FRAMEBUFFER, this._fbo);
-      gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.RENDERBUFFER, this._rbC);
-      gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, this._rbD);
+      gl.framebufferRenderbuffer(
+        gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0,
+        gl.RENDERBUFFER, this._rbC
+      );
+      gl.framebufferRenderbuffer(
+        gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT,
+        gl.RENDERBUFFER, this._rbD
+      );
+
       this._fboSize = W + 'x' + H;
     }
-
-    const rect = this.canvas.getBoundingClientRect();
-    const x = Math.floor((clientX - rect.left) * (W / rect.width));
-    const y = Math.floor((rect.bottom - clientY) * (H / rect.height));
-    if (x < 0 || y < 0 || x >= W || y >= H) return -1;
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, this._fbo);
     gl.viewport(0, 0, W, H);
     gl.enable(gl.SCISSOR_TEST);
     gl.scissor(x, y, 1, 1);
+
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
     gl.enable(gl.DEPTH_TEST);
     gl.disable(gl.BLEND);
 
-    const { vp, eye } = this._matrices();
     this._setCommon(this.pickProg, vp, eye);
     gl.bindVertexArray(this.vao);
 
-    const anySel = this.selected.some(Boolean);
     const id = new Float32Array(3);
 
-    for (let i = 0; i < this.n; i++) {
-      if (!this.visible[i]) continue;
-      if (this.xray && anySel && !this.selected[i]) continue;
+    for (const i of candidates) {
       const k = i + 1;
+
       id[0] = (k & 255) / 255;
       id[1] = ((k >> 8) & 255) / 255;
       id[2] = ((k >> 16) & 255) / 255;
+
       gl.uniform3fv(this.pickProg.u.uColor, id);
-      gl.drawElements(gl.TRIANGLES, this.elements[i].n, gl.UNSIGNED_INT, this.elements[i].o * 4);
+
+      gl.drawElements(
+        gl.TRIANGLES,
+        this.elements[i].n,
+        gl.UNSIGNED_INT,
+        this.elements[i].o * 4
+      );
     }
 
     const px = new Uint8Array(4);
     gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
+
     gl.disable(gl.SCISSOR_TEST);
     gl.bindVertexArray(null);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -520,6 +646,7 @@ requestRender() {
     const k = px[0] | (px[1] << 8) | (px[2] << 16);
     return k ? k - 1 : -1;
   }
+  
 
   // World point -> CSS pixel position inside the canvas.
   project(p) {
