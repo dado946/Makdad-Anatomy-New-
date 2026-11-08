@@ -401,7 +401,7 @@
         el('span', { class: 'n', text: atlas.displayName(ci) }),
         el('span', { class: 'c', text: cat.label }),
       ]);
-      li.addEventListener('mousedown', (ev) => { ev.preventDefault(); pickResult(i); });
+      li.addEventListener('pointerdown', (ev) => { ev.preventDefault(); pickResult(i); });
       ul.appendChild(li);
     });
     ul.hidden = false;
