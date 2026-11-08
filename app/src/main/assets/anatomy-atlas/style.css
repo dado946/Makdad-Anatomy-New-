@@ -355,3 +355,91 @@ dialog { width: min(640px, 94vw); max-height: 90vh; }
     overflow: auto;
   }
 }
+
+/* تحسين أزرار القائمة للمس على الهاتف */
+@media (max-width: 700px) {
+
+  /* أزرار تبويبات القائمة */
+  .tab {
+    min-height: 46px;
+    padding: 12px 4px;
+    font-size: 14px;
+  }
+
+  /* عناصر الطبقات */
+  .layer-list li {
+    min-height: 48px;
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .layer-list .solo {
+    min-width: 44px;
+    min-height: 36px;
+    padding: 6px;
+  }
+
+  /* مفاتيح إظهار وإخفاء الطبقات */
+  .toggle {
+    width: 42px;
+    height: 24px;
+  }
+
+  .toggle::after {
+    width: 18px;
+    height: 18px;
+  }
+
+  .toggle:checked::after {
+    transform: translateX(18px);
+  }
+
+  /* أزرار شجرة التراكيب */
+  .tree .row {
+    min-height: 44px;
+    gap: 6px;
+    padding: 4px;
+  }
+
+  .tree .caret,
+  .tree .eye {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+  }
+
+  .tree .label {
+    min-height: 38px;
+    padding: 8px 4px;
+    font-size: 14px;
+  }
+
+  /* خيارات تنظيم التراكيب */
+  .seg.full button {
+    min-height: 44px;
+    padding: 8px 6px;
+  }
+
+  /* المقاطع التشريحية */
+  .radio-col label,
+  .check {
+    min-height: 44px;
+    padding: 5px 2px;
+  }
+
+  input[type="radio"],
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+  }
+
+  input[type="range"] {
+    min-height: 38px;
+  }
+
+  /* استعادة التراكيب المخفية */
+  .pane-foot .text-btn {
+    min-height: 44px;
+    padding: 8px;
+  }
+}
