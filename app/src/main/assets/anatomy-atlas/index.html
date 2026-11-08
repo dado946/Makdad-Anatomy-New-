@@ -11,52 +11,86 @@
 </head>
 <body>
 <div id="app">
+
   <header class="topbar">
     <div class="brand">
-      <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="7" r="4.5"/><path d="M16 12v9M10 14.5l6 2 6-2M12 29l4-8 4 8"/></svg>
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <circle cx="16" cy="7" r="4.5"/>
+        <path d="M16 12v9M10 14.5l6 2 6-2M12 29l4-8 4 8"/>
+      </svg>
       <span>MAKDAD ANATOMY</span>
     </div>
+
     <div class="search" role="search">
-      <input id="search" type="search" placeholder="ابحث عن تركيب تشريحي (اضغط /)" autocomplete="off" spellcheck="false" aria-label="ابحث عن تركيب تشريحي" aria-controls="searchResults" aria-expanded="false">
-      <ul id="searchResults" class="search-results" role="listbox" hidden></ul>
+      <input id="search" type="search"
+        placeholder="ابحث عن تركيب تشريحي (اضغط /)"
+        autocomplete="off" spellcheck="false"
+        aria-label="ابحث عن تركيب تشريحي"
+        aria-controls="searchResults" aria-expanded="false">
+      <ul id="searchResults" class="search-results"
+        role="listbox" hidden></ul>
     </div>
-    <div class="seg" role="tablist" aria-label="الوضع">
-      <button id="modeExplore" role="tab" aria-selected="true" class="on">استكشاف</button>
-      <button id="modeQuiz" role="tab" aria-selected="false">اختبار</button>
-    </div>
-    <div class="tools">
-      <button id="btnSidebar" class="icon-btn" aria-expanded="true">
-  إخفاء القائمة
-      </button>
-      <div class="seg small" aria-label="منظور العرض">
+
+    <button id="btnSidebar" class="icon-btn" aria-expanded="true">
+      إخفاء القائمة
+    </button>
+  </header>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-tools">
+
+      <div class="tool-title">أوضاع الأطلس</div>
+      <div class="seg full" role="tablist" aria-label="الوضع">
+        <button id="modeExplore" role="tab"
+          aria-selected="true" class="on">استكشاف</button>
+        <button id="modeQuiz" role="tab"
+          aria-selected="false">اختبار</button>
+      </div>
+
+      <div class="tool-title">منظور الجسم</div>
+      <div class="seg full" aria-label="منظور العرض">
         <button data-view="front" title="من الأمام (1)">أمام</button>
         <button data-view="back" title="من الخلف (2)">خلف</button>
         <button data-view="left" title="الجانب الأيسر (3)">يسار</button>
         <button data-view="right" title="الجانب الأيمن (4)">يمين</button>
       </div>
-      <button id="btnReset" class="icon-btn" title="إعادة ضبط المنظور (A)">إعادة ضبط</button>
-      <button id="btnXray" class="icon-btn" aria-pressed="false">الأشعة السينية</button>
-      <button id="btnShot" class="icon-btn">حفظ صورة</button>
-      <button id="btnData" class="icon-btn">بيانات الأطلس</button>
-      <button id="btnAbout" class="icon-btn">حول التطبيق</button>
-      <button id="btnHelp" class="icon-btn" aria-label="اختصارات لوحة المفاتيح">؟</button>
-    </div>
-  </header>
 
-  <aside class="sidebar">
+      <div class="tool-title">أدوات العرض</div>
+      <div class="sidebar-action-list">
+        <button id="btnReset" class="icon-btn"
+          title="إعادة ضبط المنظور (A)">إعادة ضبط المنظور</button>
+        <button id="btnXray" class="icon-btn"
+          aria-pressed="false">الأشعة السينية</button>
+        <button id="btnShot" class="icon-btn">حفظ صورة</button>
+        <button id="btnData" class="icon-btn">بيانات الأطلس</button>
+        <button id="btnAbout" class="icon-btn">حول التطبيق</button>
+        <button id="btnHelp" class="icon-btn"
+          aria-label="اختصارات لوحة المفاتيح">المساعدة والاختصارات</button>
+      </div>
+
+    </div>
+
     <nav class="tabs" role="tablist">
       <button class="tab on" data-tab="layers" role="tab">الطبقات</button>
       <button class="tab" data-tab="tree" role="tab">التراكيب</button>
       <button class="tab" data-tab="sections" role="tab">المقاطع</button>
     </nav>
+
     <section class="pane" data-pane="layers">
       <ul id="layerList" class="layer-list"></ul>
       <div class="pane-foot">
-        <label class="check" id="mirrorToggleRow" hidden><input id="mirrorToggle" type="checkbox" class="toggle" checked> إظهار النسخ المقابلة</label>
+        <label class="check" id="mirrorToggleRow" hidden>
+          <input id="mirrorToggle" type="checkbox" class="toggle" checked>
+          إظهار النسخ المقابلة
+        </label>
         <p id="hiddenNote" class="note"></p>
-        <button id="btnShowHidden" class="text-btn" hidden>إظهار التراكيب المخفية</button>
+        <button id="btnShowHidden" class="text-btn" hidden>
+          إظهار التراكيب المخفية
+        </button>
       </div>
     </section>
+
     <section class="pane" data-pane="tree" hidden>
       <div class="seg full" role="tablist" aria-label="تنظيم التراكيب">
         <button data-tree="partof" class="on">حسب المنطقة</button>
@@ -64,6 +98,7 @@
       </div>
       <ul id="tree" class="tree" role="tree"></ul>
     </section>
+
     <section class="pane" data-pane="sections" hidden>
       <p class="note">ادرس المقاطع التشريحية للجسم.</p>
       <div class="radio-col" role="radiogroup" aria-label="مستوى المقطع">
@@ -74,16 +109,26 @@
       </div>
       <label class="slider-label" for="planePos">موضع المقطع</label>
       <input id="planePos" type="range" min="0" max="1000" value="500" disabled>
-      <label class="check"><input id="planeFlip" type="checkbox" disabled> الاحتفاظ بالجهة الأخرى</label>
+      <label class="check">
+        <input id="planeFlip" type="checkbox" disabled>
+        الاحتفاظ بالجهة الأخرى
+      </label>
     </section>
+
   </aside>
 
   <main class="stage">
-    <canvas id="viewport" tabindex="0" aria-label="عرض تشريحي ثلاثي الأبعاد"></canvas>
+    <canvas id="viewport" tabindex="0"
+      aria-label="عرض تشريحي ثلاثي الأبعاد"></canvas>
     <div id="pin" class="pin" hidden><span></span></div>
     <div id="hoverTip" class="hover-tip" hidden></div>
-    <div id="loading" class="loading"><span id="loadingText">جارٍ تحميل الأطلس...</span><div class="bar"><div id="loadingBar"></div></div></div>
-    <p class="stage-hint">اسحب للتدوير، مرّر للتكبير، واضغط لتحديد التركيب</p>
+    <div id="loading" class="loading">
+      <span id="loadingText">جارٍ تحميل الأطلس...</span>
+      <div class="bar"><div id="loadingBar"></div></div>
+    </div>
+    <p class="stage-hint">
+      اسحب للتدوير، مرّر للتكبير، واضغط لتحديد التركيب
+    </p>
   </main>
 
   <aside class="inspector">
@@ -91,39 +136,60 @@
       <h2>اضغط على أي تركيب لتحديده</h2>
       <p>ابحث عن تركيب تشريحي أو استخدم الطبقات لاستكشاف الجسم.</p>
     </div>
+
     <article id="tag" class="tag" hidden>
       <div class="tag-hole" aria-hidden="true"></div>
       <h2 id="tagName"></h2>
       <p id="tagLatin" class="tag-latin" hidden></p>
       <p id="tagId" class="tag-id"></p>
       <p id="tagNote" class="tag-note" hidden></p>
-      <p class="tag-cat"><span id="tagSwatch" class="swatch"></span><span id="tagCat"></span><span id="tagCount"></span></p>
-      <ol id="tagPath" class="tag-path" aria-label="موقع التركيب في الجسم"></ol>
+      <p class="tag-cat">
+        <span id="tagSwatch" class="swatch"></span>
+        <span id="tagCat"></span>
+        <span id="tagCount"></span>
+      </p>
+      <ol id="tagPath" class="tag-path"
+        aria-label="موقع التركيب في الجسم"></ol>
       <div class="tag-actions">
         <button id="actFocus">تركيز</button>
         <button id="actIsolate">عزل التركيب</button>
         <button id="actHide">إخفاء</button>
       </div>
     </article>
+
     <section id="wiki" class="wiki" hidden>
       <img id="wikiImg" alt="" hidden>
       <p id="wikiText"></p>
-      <a id="wikiLink" href="#" target="_blank" rel="noopener">قراءة المزيد في ويكيبيديا</a>
+      <a id="wikiLink" href="#" target="_blank" rel="noopener">
+        قراءة المزيد في ويكيبيديا
+      </a>
       <p id="wikiSource" class="note"></p>
     </section>
+
     <section id="quiz" class="quiz" hidden>
       <div id="quizSetup">
         <h2>اختبر معلوماتك</h2>
         <p class="note">تُختار الأسئلة من التراكيب الظاهرة.</p>
         <div class="radio-col" role="radiogroup" aria-label="نوع السؤال">
-          <label><input type="radio" name="qtype" value="find" checked> اعثر على التركيب المذكور</label>
-          <label><input type="radio" name="qtype" value="name"> سمِّ التركيب المحدد</label>
+          <label>
+            <input type="radio" name="qtype" value="find" checked>
+            اعثر على التركيب المذكور
+          </label>
+          <label>
+            <input type="radio" name="qtype" value="name">
+            سمِّ التركيب المحدد
+          </label>
         </div>
         <label class="slider-label" for="qcount">عدد الأسئلة</label>
-        <select id="qcount"><option>10</option><option selected>20</option><option>40</option></select>
+        <select id="qcount">
+          <option>10</option>
+          <option selected>20</option>
+          <option>40</option>
+        </select>
         <button id="quizStart" class="primary">ابدأ الاختبار</button>
         <p id="quizSetupMsg" class="note warn"></p>
       </div>
+
       <div id="quizRun" hidden>
         <p id="quizProgress" class="quiz-progress"></p>
         <h2 id="quizPrompt"></h2>
@@ -135,6 +201,7 @@
           <button id="quizStop">إنهاء الاختبار</button>
         </div>
       </div>
+
       <div id="quizDone" hidden>
         <h2 id="quizScore"></h2>
         <p class="note">تراكيب تحتاج إلى مراجعة:</p>
@@ -146,29 +213,47 @@
 
   <footer class="statusbar">
     <span id="statusData"></span>
-    <button id="statusGet" class="text-btn" hidden>الحصول على الأطلس التشريحي الكامل</button>
+    <button id="statusGet" class="text-btn" hidden>
+      الحصول على الأطلس التشريحي الكامل
+    </button>
     <span id="statusAttr" class="attr"></span>
-    <button id="statusLab" class="text-btn lab-credit" title="حول التطبيق"></button>
+    <button id="statusLab" class="text-btn lab-credit"
+      title="حول التطبيق"></button>
   </footer>
+
 </div>
 
 <dialog id="dataDialog">
   <form method="dialog" class="dialog-body">
     <h2>البيانات التشريحية</h2>
-    <p class="note" id="dataLead">يمكن تنزيل بيانات الأطلس مرة واحدة ثم استخدامها دون اتصال بالإنترنت.</p>
+    <p class="note" id="dataLead">
+      يمكن تنزيل بيانات الأطلس مرة واحدة ثم استخدامها دون اتصال بالإنترنت.
+    </p>
     <ul id="atlasList" class="atlas-list"></ul>
-    <label class="check" id="optMirrorRow"><input id="optMirror" type="checkbox" checked> إظهار النسخ المقابلة</label>
-    <label class="check" id="optCommercialRow"><input id="optCommercial" type="checkbox"> إصدار ملائم للاستخدام التجاري</label>
+    <label class="check" id="optMirrorRow">
+      <input id="optMirror" type="checkbox" checked>
+      إظهار النسخ المقابلة
+    </label>
+    <label class="check" id="optCommercialRow">
+      <input id="optCommercial" type="checkbox">
+      إصدار ملائم للاستخدام التجاري
+    </label>
     <div id="dlProgress" class="progress" hidden>
       <div class="bar"><div id="dlBar"></div></div>
       <p id="dlMsg"></p>
     </div>
     <p id="dlError" class="note warn"></p>
     <div class="dialog-foot">
-      <button type="button" id="dlImport" class="text-btn">استيراد ملفات الأطلس</button>
-      <button type="button" id="dlFolder" class="text-btn">فتح مجلد البيانات</button>
+      <button type="button" id="dlImport" class="text-btn">
+        استيراد ملفات الأطلس
+      </button>
+      <button type="button" id="dlFolder" class="text-btn">
+        فتح مجلد البيانات
+      </button>
     </div>
-    <div class="dialog-close"><button value="close" id="dataClose">إغلاق</button></div>
+    <div class="dialog-close">
+      <button value="close" id="dataClose">إغلاق</button>
+    </div>
   </form>
 </dialog>
 
@@ -178,15 +263,21 @@
     <h2 id="aboutTitle">مقداد أناتومي</h2>
     <p id="aboutText"></p>
     <dl class="about-contact">
-      <dt>الموقع الإلكتروني</dt><dd><a id="aboutWeb" target="_blank" rel="noopener"></a></dd>
-      <dt>البريد الإلكتروني</dt><dd><a id="aboutEmail"></a></dd>
-      <dt>المصدر البرمجي</dt><dd><a id="aboutRepo" target="_blank" rel="noopener"></a></dd>
-      <dt>الإصدار</dt><dd id="aboutVersion"></dd>
+      <dt>الموقع الإلكتروني</dt>
+      <dd><a id="aboutWeb" target="_blank" rel="noopener"></a></dd>
+      <dt>البريد الإلكتروني</dt>
+      <dd><a id="aboutEmail"></a></dd>
+      <dt>المصدر البرمجي</dt>
+      <dd><a id="aboutRepo" target="_blank" rel="noopener"></a></dd>
+      <dt>الإصدار</dt>
+      <dd id="aboutVersion"></dd>
     </dl>
     <h3>البيانات التشريحية</h3>
     <p class="note" id="aboutData"></p>
     <p class="note">أداة تعليمية مساعدة وليست مرجعاً سريرياً.</p>
-    <div class="dialog-close"><button value="close">إغلاق</button></div>
+    <div class="dialog-close">
+      <button value="close">إغلاق</button>
+    </div>
   </form>
 </dialog>
 
@@ -203,7 +294,9 @@
       <dt>1 2 3 4</dt><dd>أمام، خلف، يسار، يمين</dd>
       <dt>Esc</dt><dd>إلغاء التحديد</dd>
     </dl>
-    <div class="dialog-close"><button value="close">إغلاق</button></div>
+    <div class="dialog-close">
+      <button value="close">إغلاق</button>
+    </div>
   </form>
 </dialog>
 
