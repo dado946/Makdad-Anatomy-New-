@@ -486,14 +486,31 @@ protected void onCreate(Bundle savedInstanceState) {
     }
 
     @Override
-    public void onBackPressed() {
+public void onBackPressed() {
 
-        if (webView != null && webView.canGoBack()) {
-            webView.goBack();
-        } else {
-            super.onBackPressed();
-        }
+    if (webView != null && webView.canGoBack()) {
+        webView.goBack();
+        return;
     }
+
+    if (exitPending) {
+        backHandler.removeCallbacksAndMessages(null);
+        finish();
+        return;
+    }
+
+    exitPending = true;
+
+    Toast.makeText(
+        this,
+        "اضغط مرة أخرى للخروج",
+        Toast.LENGTH_SHORT
+    ).show();
+
+    backHandler.postDelayed(() -> {
+        exitPending = false;
+    }, 2000);
+}
 
     private static class LinearLayoutHolder
             extends android.widget.LinearLayout {
