@@ -748,33 +748,31 @@ document.getElementById("answers").innerHTML="";
 document.getElementById("feedback").textContent="انتهى الاختبار.";
 document.getElementById("next").textContent="إعادة الاختبار";
 
-document.getElementById("next").onclick=()=>{
-qi=0;
-score=0;
-document.getElementById("next").textContent="السؤال التالي";
-document.getElementById("next").onclick=nextQuestion;
-showQuestion();
-};
-
-return;
-}
-
-showQuestion();
-};
-
 function nextQuestion(){
-qi++;
+  if(qi < questions.length - 1){
+    qi++;
+    showQuestion();
+    return;
+  }
 
-if(qi>=questions.length){
-document.getElementById("question").innerHTML=
-`انتهى الاختبار. نتيجتك ${score} من ${questions.length}.`;
-document.getElementById("answers").innerHTML="";
-document.getElementById("feedback").textContent="انتهى الاختبار.";
-return;
+  document.getElementById("question").innerHTML =
+    `انتهى الاختبار. نتيجتك ${score} من ${questions.length}.`;
+
+  document.getElementById("answers").innerHTML = "";
+  document.getElementById("feedback").textContent = "انتهى الاختبار.";
+  document.getElementById("next").textContent = "إعادة الاختبار";
+  document.getElementById("next").onclick = restartQuiz;
 }
 
-showQuestion();
+function restartQuiz(){
+  qi = 0;
+  score = 0;
+  document.getElementById("next").textContent = "السؤال التالي";
+  document.getElementById("next").onclick = nextQuestion;
+  showQuestion();
 }
+
+document.getElementById("next").onclick = nextQuestion;
 
 
 /* تشغيل التطبيق */
