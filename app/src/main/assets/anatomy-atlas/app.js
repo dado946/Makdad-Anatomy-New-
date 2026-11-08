@@ -7,7 +7,7 @@
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => [...document.querySelectorAll(s)];
   const host = window.atlasHost || null;
-  const EYE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/></svg>';
+  const EYE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S22 12 22 12z"/><circle cx="12" cy="12" r="2.8"/></svg>';
   const el = (tag, attrs = {}, kids = []) => {
     const n = document.createElement(tag);
     for (const [k, v] of Object.entries(attrs)) {
@@ -61,16 +61,16 @@
 
   async function fetchAtlas(base) {
     const r = await fetch(base + 'index.json', { cache: 'no-cache' });
-    if (!r.ok) throw new Error('No atlas at ' + base);
+    if (!r.ok) throw new Error('لا توجد بيانات أطلس في ' + base);
     const index = await r.json();
     const parts = index.parts || [{ file: 'meshes.bin', size: index.buffers.indices[0] + index.buffers.indices[1] }];
     const total = parts.reduce((t, p) => t + p.size, 0);
     let got = 0;
-    const tick = (k) => { got += k; showLoading(`Loading ${index.name} ${index.version}: ${(got / 1048576).toFixed(0)} of ${(total / 1048576).toFixed(0)} MB`, got / total); };
+    const tick = (k) => { got += k; showLoading(`جارٍ تحميل ${index.name} ${index.version}: ${(got / 1048576).toFixed(0)} من ${(total / 1048576).toFixed(0)} MB`, got / total); };
     tick(0);
     const pieces = await Promise.all(parts.map(async (p) => {
       const res = await fetch(base + p.file, { cache: 'no-cache' });
-      if (!res.ok) throw new Error('Atlas mesh file is missing: ' + p.file);
+      if (!res.ok) throw new Error('ملف مجسمات الأطلس مفقود: ' + p.file);
       return readBody(res, tick);
     }));
     let bin;
@@ -164,7 +164,7 @@
       if (on && userHidden[i]) hidden++;
     });
     renderer.requestRender();
-    $('#hiddenNote').textContent = hidden ? `${plural(hidden, 'structure')} hidden by you.` : 'Click a layer to show or hide it.';
+    $('#hiddenNote').textContent = hidden ? `${hidden.toLocaleString()} تركيب مخفي بواسطتك.` : 'اضغط على إحدى الطبقات لإظهارها أو إخفائها.';
     $('#btnShowHidden').hidden = !hidden;
     refreshEyes();
     $$('#layerList input').forEach(cb => { cb.checked = catOn[cb.dataset.cat] !== false; });
@@ -184,7 +184,7 @@
       const cb = el('input', { type: 'checkbox', class: 'toggle', id, 'data-cat': k });
       cb.checked = catOn[k] !== false;
       cb.addEventListener('change', () => { catOn[k] = cb.checked; applyVisibility(); });
-      const solo = el('button', { class: 'solo', text: 'Only', title: `Show only ${cat.label.toLowerCase()}`, onclick: () => {
+      const solo = el('button', { class: 'solo', text: 'فقط', title: `إظهار ${cat.label.toLowerCase()} فقط`, onclick: () => {
         for (const c of Object.keys(catOn)) catOn[c] = c === k;
         applyVisibility();
       } });
@@ -206,9 +206,9 @@
   function treeNode(ci) {
     const c = atlas.concepts[ci];
     const kids = atlas.children(ci, treeKind);
-    const li = el('li', { role: 'treeitem', 'data-ci': ci });
-    const caret = el('button', { class: 'caret' + (kids.length ? '' : ' leaf'), text: '▸', 'aria-label': 'Expand', tabindex: kids.length ? '0' : '-1' });
-    const eye = el('button', { class: 'eye', html: EYE, title: 'Show or hide' });
+                  
+    const caret = el('button', { class: 'caret' + (kids.length ? '' : ' leaf'), text: '▸', 'aria-label': 'توسيع', tabindex: kids.length ? '0' : '-1' });
+    const eye = el('button', { class: 'eye', html: EYE, title: 'إظهار أو إخفاء' });
     const label = el('button', { class: 'label', text: atlas.displayName(ci), title: atlas.displayName(ci) });
     const row = el('div', { class: 'row' }, [caret, eye, label, el('span', { class: 'cnt', text: c.el.length > 1 ? c.el.length : '' })]);
     li.appendChild(row);
@@ -306,8 +306,9 @@
     const els = selection >= 0 ? atlas.concepts[selection].el.filter(e => renderer.visible[e]) : [];
     if (!els.length) { renderer.frame(atlas.index.bbox); return; }
     frameWithContext(els, 1.4);
-      }
-      function showInspector() {
+  }
+
+  function showInspector() {
     const quizOn = mode === 'quiz';
     $('#quiz').hidden = !quizOn;
     const has = !quizOn && selection >= 0;
@@ -321,7 +322,7 @@
     const c = atlas.concepts[ci];
     $('#tagName').textContent = atlas.displayName(ci);
     const fma = atlas.fmaLabel(ci);
-    $('#tagId').textContent = fma ? `Foundational Model of Anatomy ID ${fma.slice(4)}` : (atlas.isDemo ? 'Demo mannequin part' : '');
+    $('#tagId').textContent = fma ? `معرّف نموذج التشريح الأساسي FMA ${fma.slice(4)}` : (atlas.isDemo ? 'جزء من النموذج التشريحي التجريبي' : '');
     $('#tagId').hidden = !$('#tagId').textContent;
     const gl = atlas.glossaryOf(ci);
     $('#tagLatin').textContent = gl && gl.la ? gl.la : '';
@@ -332,7 +333,7 @@
     const cat = atlas.categoryOf(ci);
     $('#tagSwatch').style.background = cssColor(atlas.categories[cat].color);
     $('#tagCat').textContent = atlas.categories[cat].label;
-    $('#tagCount').textContent = c.el.length > 1 ? `(${plural(c.el.length, 'part')})` : '';
+    $('#tagCount').textContent = c.el.length > 1 ? `(${plural(c.el.length, 'جزء')})` : '';
     const path = $('#tagPath');
     path.innerHTML = '';
     for (const p of atlas.breadcrumb(ci, 'partof')) {
@@ -352,22 +353,22 @@
     if (gl && gl.def && gl.def.text) {
       // Offline definition shipped with Z-Anatomy (text from Wikipedia, CC BY-SA).
       text.textContent = gl.def.text;
-      if (gl.def.url) { link.href = gl.def.url; link.textContent = 'Read the full article on Wikipedia'; link.hidden = false; }
-      src.textContent = 'Definition from the Z-Anatomy glossary (text from Wikipedia, CC BY-SA).';
+      if (gl.def.url) { link.href = gl.def.url; link.textContent = 'اقرأ المقال كاملاً على ويكيبيديا'; link.hidden = false; }
+      src.textContent = 'التعريف من مسرد Z-Anatomy (النص من ويكيبيديا، بترخيص CC BY-SA).';
       return;
     }
-    text.textContent = 'Looking up a description…';
+    text.textContent = 'جارٍ البحث عن وصف…';
     try {
       const s = await wikiSummary(atlas.concepts[ci].name);
       if (tok !== wikiToken) return;
-      if (!s) { text.textContent = 'Wikipedia has no summary matching this structure’s name.'; return; }
+      if (!s) { text.textContent = 'لا يوجد ملخص في ويكيبيديا يطابق اسم هذا التركيب.'; return; }
       text.textContent = s.extract;
       link.href = s.url;
-      link.textContent = `Read “${s.title}” on Wikipedia (text CC BY-SA)`;
+      link.textContent = `اقرأ «${s.title}» على ويكيبيديا (النص بترخيص CC BY-SA)`;
       link.hidden = false;
       if (s.thumb) { img.src = s.thumb; img.alt = s.title; img.hidden = false; }
     } catch (_) {
-      if (tok === wikiToken) text.textContent = 'Connect to the internet to see a short description from Wikipedia.';
+      if (tok === wikiToken) text.textContent = 'اتصل بالإنترنت لعرض وصف مختصر من ويكيبيديا.';
     }
   }
 
@@ -393,7 +394,7 @@
     ul.innerHTML = '';
     if (!q) { ul.hidden = true; $('#search').setAttribute('aria-expanded', 'false'); return; }
     results = atlas.search(q, 60);
-    if (!results.length) ul.appendChild(el('li', { class: 'none', text: 'No structure with that name' }));
+    if (!results.length) ul.appendChild(el('li', { class: 'none', text: 'لم يتم العثور على تركيب بهذا الاسم' }));
     results.forEach((ci, i) => {
       const cat = atlas.categories[atlas.categoryOf(ci)];
       const li = el('li', { role: 'option', 'aria-selected': i === active ? 'true' : 'false' }, [
@@ -428,8 +429,11 @@
       renderer.view(kind === 'sagittal' ? 'left' : 'front');
       if (kind === 'axial') renderer._animateTo({ yaw: 0.35, pitch: 0.75, dist: renderer.camera.dist, target: renderer.camera.target.slice() });
     }
+                                }
+  
     updatePlane();
   }
+
   function updatePlane() {
     const kind = ($$('input[name="plane"]').find(r => r.checked) || {}).value || 'none';
     if (kind === 'none' || !atlas) { renderer.clip.on = false; renderer.requestRender(); return; }
@@ -444,10 +448,10 @@
     renderer.requestRender();
   }
 
-  // ======================= quiz =======================
+  // ======================= الاختبار =======================
 
   const quiz = { type: 'find', total: 0, i: 0, score: 0, pool: [], missed: [], cur: -1, answered: false, userXray: false };
-  // While a quiz shows a target, everything else turns translucent so deep structures stay visible.
+  // عند عرض تركيب في الاختبار تصبح بقية التراكيب شبه شفافة.
   const quizXray = (on) => { renderer.xray = on || quiz.userXray; renderer.requestRender(); };
   const shuffle = (a) => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
@@ -473,7 +477,7 @@
 
   function quizStart() {
     const pool = quizPool();
-    if (pool.length < 4) { $('#quizSetupMsg').textContent = 'Show at least four named structures to start a quiz.'; return; }
+    if (pool.length < 4) { $('#quizSetupMsg').textContent = 'أظهر أربعة تراكيب مسماة على الأقل لبدء الاختبار.'; return; }
     quiz.type = $$('input[name="qtype"]').find(r => r.checked).value;
     quiz.pool = shuffle(pool);
     quiz.total = Math.min(+$('#qcount').value, pool.length);
@@ -486,18 +490,18 @@
     quiz.cur = quiz.pool[quiz.i];
     quiz.answered = false;
     const name = atlas.displayName(quiz.cur);
-    $('#quizProgress').textContent = `Question ${quiz.i + 1} of ${quiz.total}, ${quiz.score} correct so far`;
+    $('#quizProgress').textContent = `السؤال ${quiz.i + 1} من ${quiz.total}، الإجابات الصحيحة حتى الآن: ${quiz.score}`;
     $('#quizFeedback').textContent = ''; $('#quizFeedback').className = 'quiz-feedback';
     $('#quizNext').hidden = true; $('#quizSkip').hidden = false;
     renderer.selected.fill(0);
     const opts = $('#quizOptions');
     opts.innerHTML = '';
     if (quiz.type === 'find') {
-      $('#quizPrompt').textContent = `Click the ${name.charAt(0).toLowerCase() + name.slice(1)}`;
+      $('#quizPrompt').textContent = `انقر على ${name}`;
       quizXray(false);
       renderer.frame(atlas.index.bbox);
     } else {
-      $('#quizPrompt').textContent = 'What is the highlighted structure?';
+      $('#quizPrompt').textContent = 'ما اسم التركيب المحدد؟';
       for (const e of atlas.concepts[quiz.cur].el) renderer.selected[e] = 1;
       quizXray(true);
       frameWithContext(atlas.concepts[quiz.cur].el, 2);
@@ -526,25 +530,25 @@
     quiz.answered = true;
     const fb = $('#quizFeedback');
     const name = atlas.displayName(quiz.cur);
-    if (correct) { quiz.score++; fb.textContent = `Correct, that is the ${name.toLowerCase()}.`; fb.className = 'quiz-feedback right'; }
+    if (correct) { quiz.score++; fb.textContent = `صحيح، هذا هو ${name}.`; fb.className = 'quiz-feedback right'; }
     else { quiz.missed.push(quiz.cur); fb.textContent = wrongText; fb.className = 'quiz-feedback wrong'; }
     renderer.selected.fill(0);
     for (const e of atlas.concepts[quiz.cur].el) renderer.selected[e] = 1;
     quizXray(true);
     if (!correct) frameWithContext(atlas.concepts[quiz.cur].el, 2);
     renderer.requestRender();
-    $('#quizProgress').textContent = `Question ${quiz.i + 1} of ${quiz.total}, ${quiz.score} correct so far`;
+    $('#quizProgress').textContent = `السؤال ${quiz.i + 1} من ${quiz.total}، الإجابات الصحيحة: ${quiz.score}`;
     $('#quizNext').hidden = false; $('#quizSkip').hidden = true;
-    $('#quizNext').textContent = quiz.i + 1 >= quiz.total ? 'See results' : 'Next question';
+    $('#quizNext').textContent = quiz.i + 1 >= quiz.total ? 'عرض النتائج' : 'السؤال التالي';
     $('#quizNext').focus();
   }
 
   function quizPick(elIdx) {
     if (quiz.answered || quiz.type !== 'find' || $('#quizRun').hidden) return;
-    if (elIdx < 0) { $('#quizFeedback').textContent = 'Click directly on a structure.'; return; }
+    if (elIdx < 0) { $('#quizFeedback').textContent = 'انقر مباشرة على أحد التراكيب.'; return; }
     const correct = atlas.concepts[quiz.cur].el.includes(elIdx);
     const clicked = atlas.displayName(atlas.conceptOf(elIdx)).toLowerCase();
-    quizResolve(correct, `That is the ${clicked}. The ${atlas.displayName(quiz.cur).toLowerCase()} is now highlighted.`);
+    quizResolve(correct, `هذا هو ${clicked}. تم تحديد ${atlas.displayName(quiz.cur)} الآن.`);
   }
 
   function quizAnswerName(ci, btn) {
@@ -555,7 +559,7 @@
       if (+b.dataset.ci === quiz.cur) b.classList.add('right');
     });
     if (!correct) btn.classList.add('wrong');
-    quizResolve(correct, `Not quite: it is the ${atlas.displayName(quiz.cur).toLowerCase()}.`);
+    quizResolve(correct, `الإجابة غير صحيحة، التركيب هو ${atlas.displayName(quiz.cur)}.`);
   }
 
   function quizNext() {
@@ -568,11 +572,11 @@
     $('#quizRun').hidden = true; $('#quizDone').hidden = false;
     const asked = Math.min(quiz.total, quiz.i + (quiz.answered && quiz.i < quiz.total ? 1 : 0));
     const pct = asked ? Math.round((quiz.score / asked) * 100) : 0;
-    $('#quizScore').textContent = `${quiz.score} of ${asked} correct (${pct}%)`;
+    $('#quizScore').textContent = `${quiz.score} من ${asked} إجابة صحيحة (${pct}%)`;
     quizXray(false);
     const ul = $('#quizMissed');
     ul.innerHTML = '';
-    if (!quiz.missed.length) ul.appendChild(el('li', { text: 'Nothing to review. Well done.' }));
+    if (!quiz.missed.length) ul.appendChild(el('li', { text: 'لا توجد تراكيب تحتاج إلى مراجعة. أحسنت!' }));
     for (const ci of [...new Set(quiz.missed)]) {
       ul.appendChild(el('li', {}, el('button', { text: atlas.displayName(ci), onclick: () => { setMode('explore'); select(ci, { focus: true }); } })));
     }
@@ -580,7 +584,7 @@
     renderer.requestRender();
   }
 
-  // ======================= modes, status, data =======================
+  // ======================= الأوضاع والحالة والبيانات =======================
 
   function setMode(m) {
     mode = m;
@@ -597,14 +601,14 @@
   function updateStatus() {
     const i = atlas.index;
     if (atlas.isDemo) {
-      $('#statusData').textContent = 'Demo mannequin: simplified shapes, not real anatomy.';
+      $('#statusData').textContent = 'نموذج تجريبي مبسط، وليس تشريحاً حقيقياً.';
       $('#statusGet').hidden = false;
       $('#statusAttr').textContent = '';
     } else {
-      $('#statusData').textContent = `${i.name} ${i.version}: ${plural(i.counts.elements, 'mesh').replace('meshs', 'meshes')}${i.counts.mirrored ? ` (${i.counts.mirrored} mirrored)` : ''}, ${plural(i.counts.concepts, 'named structure')}`;
+      $('#statusData').textContent = `${i.name} ${i.version}: ${plural(i.counts.elements, 'مجسم').replace('meshs', 'meshes')}${i.counts.mirrored ? ` (${i.counts.mirrored} معكوس)` : ''}, ${plural(i.counts.concepts, 'تركيب مسمى')}`;
       $('#statusGet').hidden = true;
       $('#statusAttr').innerHTML = '';
-      $('#statusAttr').appendChild(el('a', { href: i.licenseUrl || i.sourceUrl, target: '_blank', rel: 'noopener', text: `${i.attribution}${i.license && /NC/.test(i.license) ? '. Non-commercial use only' : ''}` }));
+      $('#statusAttr').appendChild(el('a', { href: i.licenseUrl || i.sourceUrl, target: '_blank', rel: 'noopener', text: `${i.attribution}${i.license && /NC/.test(i.license) ? '. للاستخدام غير التجاري فقط' : ''}` }));
     }
   }
 
@@ -627,7 +631,7 @@
 
   async function openDataDialog() {
     $('#dlError').textContent = '';
-    if (site) $('#dataLead').textContent = `This online version includes ${site.atlases.length === 1 ? 'one atlas' : site.atlases.length + ' atlases'}. ${site.atlases.length > 1 ? 'Choose one to load it in your browser. ' : ''}To install the app and other atlases on your own computer, see the project page.`;
+    if (site) $('#dataLead').textContent = `تتضمن هذه النسخة ${site.atlases.length === 1 ? 'أطلساً واحداً' : site.atlases.length + ' أطالس'}. ${site.atlases.length > 1 ? 'اختر أطلساً لتحميله في المتصفح. ' : ''}لتثبيت التطبيق وأطالس أخرى على حاسوبك، راجع صفحة المشروع.`;
     $('#optMirrorRow').hidden = !host;
     $('#optCommercialRow').hidden = !host;
     $('#dlImport').hidden = !host;
@@ -636,7 +640,7 @@
     if (!dlg.open) {
       try { dlg.showModal(); } catch (_) { dlg.setAttribute('open', ''); }
     }
-    try { await renderAtlasList(); } catch (e) { $('#dlError').textContent = 'Could not read the installed atlases: ' + e.message; }
+    try { await renderAtlasList(); } catch (e) { $('#dlError').textContent = 'تعذرت قراءة الأطالس المثبتة: ' + e.message; }
   }
 
   async function renderAtlasList() {
@@ -644,28 +648,29 @@
     const st = await getStatus();
     ul.innerHTML = '';
     if (!st) {
-      ul.appendChild(el('li', {}, el('p', { text: 'Run "npm run web" from the project folder to manage atlases here, or use the commands in SETUP.md.' })));
+      ul.appendChild(el('li', {}, el('p', { text: 'شغّل أمر إدارة الأطالس من مجلد المشروع، أو راجع ملف SETUP.md.' })));
       return;
     }
     for (const a of st.atlases) {
+      
       const active = a.id === st.active && !atlas.isDemo;
       const li = el('li', { class: active ? 'active' : '' });
       li.appendChild(el('div', { class: 'head' }, [
         el('span', { class: 'title', text: a.title }),
-        el('span', { class: 'state', text: active ? 'Showing now' : a.ready ? (site ? `Available online, ${a.size}` : 'Installed') : a.size }),
+        el('span', { class: 'state', text: active ? 'معروض الآن' : a.ready ? (site ? `متاح عبر الإنترنت، ${a.size}` : 'مثبّت') : a.size }),
       ]));
       li.appendChild(el('p', { text: a.summary }));
-      if (a.ready) li.appendChild(el('p', { text: `${a.counts.elements.toLocaleString()} meshes${a.counts.mirrored ? ` (${a.counts.mirrored} mirrored)` : ''}, ${a.counts.concepts.toLocaleString()} named structures, ${a.counts.triangles.toLocaleString()} triangles. Licence: ${a.license}.` }));
+      if (a.ready) li.appendChild(el('p', { text: `${a.counts.elements.toLocaleString()} مجسم، ${a.counts.mirrored ? `${a.counts.mirrored} معكوس، ` : ''}${a.counts.concepts.toLocaleString()} تركيب مسمى، ${a.counts.triangles.toLocaleString()} مثلث. الترخيص: ${a.license}.` }));
       const actions = el('div', { class: 'row-actions' });
-      if (a.ready && !active) actions.appendChild(el('button', { type: 'button', class: 'primary', text: 'Show this atlas', onclick: () => runSafe(() => setActiveAtlas(a.id)) }));
+      if (a.ready && !active) actions.appendChild(el('button', { type: 'button', class: 'primary', text: 'عرض هذا الأطلس', onclick: () => runSafe(() => setActiveAtlas(a.id)) }));
       if (host) {
         const opts = () => ({ source: a.id, mirror: $('#optMirror').checked, commercialSafe: $('#optCommercial').checked });
-        actions.appendChild(el('button', { type: 'button', class: a.ready ? '' : 'primary', text: a.ready ? 'Download again' : `Download (${a.size})`, onclick: () => runDataJob((p) => host.prepare(opts(), p)) }));
-        if (a.ready) actions.appendChild(el('button', { type: 'button', text: 'Rebuild', title: 'Rebuild from the downloaded files with the options above', onclick: () => runDataJob((p) => host.rebuild(opts(), p)) }));
-        if (a.id === 'bp3d40' && !a.ready) actions.appendChild(el('button', { type: 'button', text: 'Regional set only (62 MB)', onclick: () => runDataJob((p) => host.prepare({ ...opts(), variant: 'core' }, p)) }));
-        if (a.ready) actions.appendChild(el('button', { type: 'button', text: 'Remove', onclick: () => removeAtlas(a.id) }));
+        actions.appendChild(el('button', { type: 'button', class: a.ready ? '' : 'primary', text: a.ready ? 'إعادة التنزيل' : `تنزيل (${a.size})`, onclick: () => runDataJob((p) => host.prepare(opts(), p)) }));
+        if (a.ready) actions.appendChild(el('button', { type: 'button', text: 'إعادة البناء', title: 'إعادة البناء من الملفات التي تم تنزيلها باستخدام الخيارات أعلاه', onclick: () => runDataJob((p) => host.rebuild(opts(), p)) }));
+        if (a.id === 'bp3d40' && !a.ready) actions.appendChild(el('button', { type: 'button', text: 'المجموعة الإقليمية فقط (62 MB)', onclick: () => runDataJob((p) => host.prepare({ ...opts(), variant: 'core' }, p)) }));
+        if (a.ready) actions.appendChild(el('button', { type: 'button', text: 'إزالة', onclick: () => removeAtlas(a.id) }));
       } else if (!a.ready) {
-        actions.appendChild(el('p', {}, [document.createTextNode('Install from the project folder with '), el('code', { text: CMD[a.id] }), document.createTextNode(', then reload.')]));
+        actions.appendChild(el('p', {}, [document.createTextNode('للتثبيت، استخدم الأمر من مجلد المشروع: '), el('code', { text: CMD[a.id] }), document.createTextNode('، ثم أعد التحميل.')]));
       }
       li.appendChild(actions);
       ul.appendChild(li);
@@ -677,7 +682,7 @@
   }
 
   async function removeAtlas(id) {
-    if (!window.confirm('Remove this atlas from this computer? You can download it again later.')) return;
+    if (!window.confirm('هل تريد إزالة هذا الأطلس من الجهاز؟ يمكنك تنزيله مجدداً لاحقاً.')) return;
     await host.remove(id);
     const st = await host.status();
     useAtlas(st.ready ? await fetchAtlas(host.dataBase) : buildProceduralAtlas());
@@ -690,31 +695,31 @@
     $('#dlError').textContent = '';
     $('#dlProgress').hidden = false;
     $('#dlBar').style.width = '0%';
-    $('#dlMsg').textContent = 'Starting…';
+    $('#dlMsg').textContent = 'جارٍ البدء…';
     const mb = (n) => (n / 1048576).toFixed(1);
     try {
       const res = await job((p) => {
         if (p.phase === 'warn') { $('#dlError').textContent = p.message; return; }
         const pct = p.total ? (p.loaded / p.total) * 100 : null;
         let msg = p.message || '';
-        if (p.phase === 'download' && p.file && p.total > 1) msg += `: ${mb(p.loaded)} of ${mb(p.total)} MB`;
+        if (p.phase === 'download' && p.file && p.total > 1) msg += `: ${mb(p.loaded)} من ${mb(p.total)} MB`;
         if (pct !== null) $('#dlBar').style.width = pct.toFixed(1) + '%';
         $('#dlMsg').textContent = msg;
       });
       if (res && res.canceled) { $('#dlProgress').hidden = true; return; }
-      $('#dlMsg').textContent = 'Loading the atlas…';
+      $('#dlMsg').textContent = 'جارٍ تحميل الأطلس…';
       useAtlas(await fetchAtlas(host.dataBase));
       $('#dlBar').style.width = '100%';
-      $('#dlMsg').textContent = `Ready: ${atlas.index.name} ${atlas.index.version}, ${atlas.index.counts.elements.toLocaleString()} meshes, ${atlas.index.counts.concepts.toLocaleString()} named structures.`;
+      $('#dlMsg').textContent = `جاهز: ${atlas.index.name} ${atlas.index.version}، ${atlas.index.counts.elements.toLocaleString()} مجسم، ${atlas.index.counts.concepts.toLocaleString()} تركيب مسمى.`;
       $('#dlError').textContent = '';
     } catch (e) {
-      $('#dlError').textContent = `${e.message.replace(/^Error invoking remote method '[^']+': (Error: )?/, '')} Check your internet connection and try again; finished downloads are kept and reused.`;
+      $('#dlError').textContent = `${e.message.replace(/^Error invoking remote method '[^']+': (Error: )?/, '')} تحقق من اتصال الإنترنت وحاول مجدداً؛ يتم الاحتفاظ بالتنزيلات المكتملة وإعادة استخدامها.`;
     } finally {
       await renderAtlasList();
     }
   }
 
-  // ======================= input =======================
+  // ======================= التحكم والإدخال =======================
 
   function bindStage() {
     const canvas = $('#viewport');
@@ -803,7 +808,7 @@
     $('#btnHelp').addEventListener('click', () => $('#helpDialog').showModal());
     $('#btnAbout').addEventListener('click', openAbout);
     $('#statusLab').addEventListener('click', openAbout);
-    $('#statusLab').textContent = window.BRAND && window.BRAND.lab ? `Made by ${window.BRAND.lab}` : '';
+    $('#statusLab').textContent = window.BRAND && window.BRAND.lab ? `صنع بواسطة ${window.BRAND.lab}` : '';
     $('#btnShowHidden').addEventListener('click', () => { userHidden.fill(0); applyVisibility(); });
 
     $$('.tab').forEach(t => t.addEventListener('click', () => {
@@ -876,7 +881,7 @@
     const i = atlas && atlas.index;
     $('#aboutLogo').src = B.logo || 'brand/logo.png';
     $('#aboutLogo').alt = (B.lab || '') + ' logo';
-    $('#aboutTitle').textContent = 'Open Anatomy Atlas';
+    $('#aboutTitle').textContent = 'مقداد أناتومي';
     $('#aboutText').textContent = B.about || '';
     $('#aboutWeb').href = B.website || '#'; $('#aboutWeb').textContent = (B.website || '').replace(/^https?:\/\//, '');
     $('#aboutEmail').href = 'mailto:' + (B.email || ''); $('#aboutEmail').textContent = B.email || '';
@@ -884,8 +889,8 @@
     $('#aboutRepo').closest('dd').previousElementSibling.hidden = !B.repository;
     $('#aboutRepo').closest('dd').hidden = !B.repository;
     $('#aboutVersion').textContent = B.version || '';
-    $('#aboutData').textContent = !i || atlas.isDemo ? 'No atlas loaded: you are viewing the built-in demo mannequin.'
-      : `${i.name} ${i.version}. ${i.attribution}. Licence: ${i.license}.`;
+    $('#aboutData').textContent = !i || atlas.isDemo ? 'لا يوجد أطلس محمّل؛ أنت تشاهد النموذج التجريبي المدمج.'
+      : `${i.name} ${i.version}. ${i.attribution}. الترخيص: ${i.license}.`;
     $('#aboutDialog').showModal();
   }
 
@@ -905,7 +910,7 @@
     clearSelection();
   }
 
-  // ======================= boot =======================
+  // ======================= بدء تشغيل الأطلس =======================
 
   async function boot() {
     try {
