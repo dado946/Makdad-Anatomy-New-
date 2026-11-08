@@ -735,7 +735,26 @@ let inertiaFrame = null;
 
   const distance = (a, b) =>
     Math.hypot(a.x - b.x, a.y - b.y);
+  function startInertia() {
+    if (inertiaFrame) cancelAnimationFrame(inertiaFrame);
 
+    function step() {
+      inertiaX *= 0.92;
+      inertiaY *= 0.92;
+
+      if (Math.abs(inertiaX) < 0.15 && Math.abs(inertiaY) < 0.15) {
+        inertiaX = 0;
+        inertiaY = 0;
+        inertiaFrame = null;
+        return;
+      }
+
+      renderer.orbit(inertiaX, inertiaY);
+      inertiaFrame = requestAnimationFrame(step);
+    }
+
+    inertiaFrame = requestAnimationFrame(step);
+  }
   canvas.addEventListener('contextmenu', e => e.preventDefault());
 
   canvas.addEventListener('pointerdown', e => {
