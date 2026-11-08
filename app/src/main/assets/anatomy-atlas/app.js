@@ -755,6 +755,12 @@
       }, atlas.index.counts.triangles > 4e6 ? 220 : 80);
     });
     canvas.addEventListener('pointerleave', () => { clearTimeout(hoverTimer); $('#hoverTip').hidden = true; });
+    canvas.addEventListener('pointercancel', () => {
+  drag = null;
+  canvas.classList.remove('dragging');
+  clearTimeout(hoverTimer);
+  $('#hoverTip').hidden = true;
+});
     canvas.addEventListener('pointerup', (e) => {
       canvas.classList.remove('dragging');
       if (drag && !drag.moved && drag.btn === 0) {
