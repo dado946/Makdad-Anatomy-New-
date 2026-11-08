@@ -1,0 +1,62 @@
+
+name: Build Offline Anatomy Data
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-atlas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout app repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Checkout anatomy atlas
+        uses: actions/checkout@v4
+        with:
+          repository: CognitionLabSNUC/open-anatomy-atlas
+          path: open-anatomy-atlas
+
+      - name: Download and build anatomy data
+        working-directory: open-anatomy-atlas
+        run: |
+          node tools/fetch-data.js \
+            --source bp3d43 \
+            --dir "$RUNNER_TEMP/atlas-data"
+
+      - name: Prepare offline data
+        working-directory: open-anatomy-atlas
+        run: |
+          node tools/build-site.js \
+            --dir "$RUNNER_TEMP/atlas-data" \
+            --out "$RUNNER_TEMP/site" \
+            --atlases bp3d43 \
+            --default bp3d43
+
+      - name: Compress atlas
+        run: |
+          cd "$RUNNER_TEMP/site/data"
+          zip -qr "$RUNNER_TEMP/atlas-bp3d43.zip" bp3d43
+
+      - name: Publish atlas package
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: atlas-data-bp3d43-v1
+          name: Offline Anatomy Data
+          body: |
+            BodyParts3D 4.3 anatomical data.
+            Licensed under CC BY 4.0.
+          files: ${{ runner.temp }}/atlas-bp3d43.zip
+          overwrite_files: true
+          make_latest: false
+          
