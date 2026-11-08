@@ -444,7 +444,7 @@ public class MainActivity extends Activity {
 
                 percent.setText("100%");
 
-                progress.setIndeterminate(false);
+            
                 progress.setVisibility(View.VISIBLE);
 
                 handler.postDelayed(
