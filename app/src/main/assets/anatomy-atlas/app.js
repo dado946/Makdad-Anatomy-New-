@@ -724,6 +724,9 @@
   function bindStage() {
   const canvas = $('#viewport');
   let drag = null;
+    let inertiaX = 0;
+let inertiaY = 0;
+let inertiaFrame = null;
   let hoverTimer = 0;
   const pointers = new Map();
   let pinchDistance = 0;
