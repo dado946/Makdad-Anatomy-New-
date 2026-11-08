@@ -223,9 +223,16 @@ requestRender() {
 
   setAtlas(index, bin) {
     const gl = this.gl;
-    if (this.vao) {
+        if (this.vao) {
       gl.deleteVertexArray(this.vao);
-      this.buffers.forEach(b => gl.deleteBuffer(b));
+      this.vao = null;
+    }
+
+    if (this.buffers) {
+      for (const buffer of this.buffers) {
+        if (buffer) gl.deleteBuffer(buffer);
+      }
+      this.buffers = null;
     }
 
     const [po, pl] = index.buffers.positions;
