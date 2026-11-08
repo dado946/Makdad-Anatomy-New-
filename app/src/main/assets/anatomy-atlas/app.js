@@ -759,6 +759,10 @@ let inertiaFrame = null;
 
   canvas.addEventListener('pointerdown', e => {
     canvas.focus({ preventScroll: true });
+    if (inertiaFrame) cancelAnimationFrame(inertiaFrame);
+inertiaFrame = null;
+inertiaX = 0;
+inertiaY = 0;
     pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     canvas.setPointerCapture(e.pointerId);
     clearTimeout(hoverTimer);
